@@ -67,7 +67,7 @@ const Nav = () => {
                 </div>
             </nav>
 
-            {/* Drawer Component */}
+            {/* Drawer Component a*/}
             <Drawer
                 title="Shopping Cart"
                 placement="right"
