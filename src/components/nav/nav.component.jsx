@@ -58,13 +58,14 @@ const Nav = () => {
                     </Button>
 
                     {/* Avatar with Dropdown */}
-                    <Dropdown menu={menu} trigger={['click']} placement="bottomRight">
+                    <Dropdown overlay={menu} trigger={['click']} placement="bottomRight">
                         <Avatar
                             size={avatarSize.xxl}
                             src={AvatarImage}
                             className="avatar"
                         />
                     </Dropdown>
+
                 </div>
             </nav>
 

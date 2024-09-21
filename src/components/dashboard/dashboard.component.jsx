@@ -27,6 +27,16 @@ const Dashboard = () => {
       image: 'https://via.placeholder.com/300',
       title: 'Sample Card 4',
       description: 'Description for card 4.'
+    },
+    {
+      image: 'https://via.placeholder.com/300',
+      title: 'Sample Card 5',
+      description: 'Description for card 5.'
+    },
+    {
+      image: 'https://via.placeholder.com/300',
+      title: 'Sample Card 6',
+      description: 'Description for card 6.'
     }
   ];
 
@@ -47,8 +57,8 @@ const Dashboard = () => {
       </Sider>
       <Layout style={{ marginLeft: 250, padding: '24px' }}>
         <Content className="content-style">
-          <h1>React Templates, Source Code Download</h1>
-          <p>This is where you would display your main content, such as a grid or list of templates.</p>
+          {/*<h1>React Templates, Source Code Download</h1>*/}
+          {/*<p>This is where you would display your main content, such as a grid or list of templates.</p>*/}
 
           <div className="card-container">
             {cardsData.map((card, index) => (
