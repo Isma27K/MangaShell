@@ -1,16 +1,17 @@
-// =============== Import Dependency =====================
-
-// =============== Components ============================
+import React from 'react';
 import Nav from "../../components/nav/nav.component";
-import {Divider} from "antd";
+import Dashboard from "../../components/dashboard/dashboard.component";
+import Footer from '../../components/footer/footer.component.jsx';
 
-// =============== Home code =============================
 
 const Home = () => {
     return (
         <div>
-            <Nav/>
-            <Divider/>
+            <Nav />
+            <div style={{ paddingTop: '10vh' }}> {/* Adjust this value based on your nav height */}
+                <Dashboard />
+            </div>
+            <Footer />
         </div>
     )
 }

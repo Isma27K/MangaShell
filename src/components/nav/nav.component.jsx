@@ -1,85 +1,83 @@
-// =============== import dependency =========================
-import React, {useState} from 'react';
-import {ShoppingCartOutlined} from '@ant-design/icons';
-import {Avatar, Input, Button, Badge, Drawer} from 'antd';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom'; // Corrected import for Link
+import { ShoppingCartOutlined, DownloadOutlined, BookOutlined, SettingOutlined, LogoutOutlined } from '@ant-design/icons';
+import { Avatar, Input, Button, Badge, Drawer, Menu, Dropdown } from 'antd';
 
-// =============== import assets ============================
+// Import assets
 import AvatarImage from "../../asset/test/avatar/OIP.jpeg";
+import './nav.style.scss'; // Import the SCSS file for styling
 
 const avatarSize = {
-    xs: 30,   // Extra small
-    sm: 35,   // Small
-    md: 40,   // Medium
-    lg: 45,   // Large
-    xl: 50,   // Extra large
-    xxl: 55   // Extra extra large
+    xs: 30, sm: 35, md: 40, lg: 45, xl: 50, xxl: 55
 };
 
 const Nav = () => {
-    const [cartItems, setCartItems] = useState(2); // Example cart item count
-    const [isDrawerVisible, setDrawerVisible] = useState(false); // Drawer visibility state
-
-    // Function to handle cart click
+    const [cartItems] = useState(2); // If not used, you can remove setCartItems
+    const [isDrawerVisible, setDrawerVisible] = useState(false);
     const handleCartClick = () => {
-        setDrawerVisible(true); // Show the drawer when cart is clicked
+        setDrawerVisible(true);
     };
 
-    // Function to close the drawer
     const handleDrawerClose = () => {
         setDrawerVisible(false);
     };
 
+    // Define menu items for the avatar dropdown
+    const menu = (
+        <Menu className="menu">
+            <Menu.Item key="1" icon={<DownloadOutlined />} className="menu-item">
+                Downloads
+            </Menu.Item>
+            <Menu.Item key="2" icon={<BookOutlined />} className="menu-item">
+                Saved
+            </Menu.Item>
+            <Menu.Item key="3" icon={<SettingOutlined />} className="menu-item">
+                Settings
+            </Menu.Item>
+            <Menu.Item key="4" icon={<LogoutOutlined />} className="menu-item">
+                Logout
+            </Menu.Item>
+        </Menu>
+    );
+
     return (
         <>
-            <nav className="nav" style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '10px',
-                height: `${avatarSize.xxl}px`,
-                position: 'relative'
-            }}>
-                {/* Left Section: Input */}
-                <div className="nav-search" style={{flexGrow: 1, marginRight: '20px'}}>
-                    <Input placeholder="Whats In Your Mind..." style={{width: '25vw', height: '100%'}}/>
+            <nav className="nav">
+                <div className="nav-search">
+                    <Input placeholder="What's In Your Mind..." />
+                </div>
+                <div className="nav-title">
+                    <Link to="/"><h2>Rata.Code</h2></Link> {/* Corrected usage of Link */}
                 </div>
 
-                {/* Center Section: Website Name */}
-                <div className="nav-title"
-                     style={{position: 'absolute', left: '50%', transform: 'translateX(-50%)', textAlign: 'center'}}>
-                    <h2 style={{margin: 0}}>Rata.Code</h2>
-                </div>
-
-                {/* Right Section: Cart and Avatar */}
-                <div className="nav-cart-avatar" style={{display: "flex", alignItems: "center"}}>
-                    {/* Cart button with badge */}
-                    <Button type="text" onClick={handleCartClick} style={{marginRight: '15px'}}>
+                <div className="nav-cart-avatar">
+                    <Button type="text" onClick={handleCartClick}>
                         <Badge count={cartItems} showZero>
-                            <ShoppingCartOutlined style={{fontSize: `${avatarSize.xxl * 0.6}px`}}/>
+                            <ShoppingCartOutlined className="cart-icon" />
                         </Badge>
                     </Button>
 
-                    {/* Avatar */}
-                    <Avatar
-                        size={avatarSize.xxl}
-                        src={AvatarImage}
-                    />
+                    {/* Avatar with Dropdown */}
+                    <Dropdown menu={menu} trigger={['click']} placement="bottomRight">
+                        <Avatar
+                            size={avatarSize.xxl}
+                            src={AvatarImage}
+                            className="avatar"
+                        />
+                    </Dropdown>
                 </div>
             </nav>
 
-            {/* Drawer Component a*/}
             <Drawer
                 title="Shopping Cart"
                 placement="right"
                 onClose={handleDrawerClose}
-                visible={isDrawerVisible}
+                open={isDrawerVisible} // Updated to use 'open'
                 width={300}
             >
-                {/* Cart Content: For now, just showing a list of items */}
                 <p>Item 1</p>
                 <p>Item 2</p>
                 <p>Item 3</p>
-                {/* You can add a list, pricing, and checkout options here */}
             </Drawer>
         </>
     );
