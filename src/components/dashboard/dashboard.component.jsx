@@ -47,12 +47,12 @@ const Dashboard = () => {
     <Layout className="dashboard-layout">
       <Sider className="sider-style" width={250}>
         <div className="filter-container">
-          <h2 className="filter-title">Filters</h2>
+          <h2 className="filter-title">Filters (Coming Soon)</h2>
           <Collapse defaultActiveKey={['1']} ghost expandIconPosition="end">
-            <Panel header="Genres" key="1">
+            <Panel header="Genres" key="1" disabled>
               <div className="genre-list">
                 {genreFilters.map((genre, index) => (
-                  <Checkbox key={index}>{genre}</Checkbox>
+                  <Checkbox key={index} disabled>{genre}</Checkbox>
                 ))}
               </div>
             </Panel>

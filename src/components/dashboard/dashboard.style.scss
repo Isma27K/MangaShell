@@ -14,7 +14,7 @@
   }
 
   .filter-container {
-    //padding: 16px;
+    padding: 16px; // Add padding here
 
     .filter-title {
       font-size: 18px;
@@ -29,7 +29,7 @@
       }
 
       .ant-collapse-content-box {
-        padding: 0;
+        padding: 0 0 0 8px; // Add left padding to align checkboxes
       }
     }
 
