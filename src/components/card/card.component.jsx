@@ -16,7 +16,7 @@ const CustomCard = memo(({ title, description, cover_image, genres = [] }) => {
         <div className="genre-tags">
           <h4>Genres:</h4>
           {genres.map((genre, index) => (
-            <Tag key={index} color="blue">{genre}</Tag>
+            <Tag key={index} className="monochrome-tag">{genre}</Tag>
           ))}
         </div>
       )}
@@ -37,7 +37,7 @@ const CustomCard = memo(({ title, description, cover_image, genres = [] }) => {
     >
       <Card
         hoverable
-        cover={<img src={cover_image} loading="lazy" />}
+        cover={<img src={cover_image} alt={title} loading="lazy" />}
         className="custom-card"
       >
         <div className="card-content">

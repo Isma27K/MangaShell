@@ -74,6 +74,7 @@ const Dashboard = () => {
                     title={card.title}
                     description={card.description}
                     cover_image={card.cover_image}
+                    genres={card.genres} // Add this line to pass genres
                   />
                 </div>
               ))}
