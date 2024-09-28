@@ -4,7 +4,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './routes/home/Home.Routes';
 import PageNotFound from "./routes/404/404.Routes";
 import MangaDetail from './routes/mangaPage/mangaDetail';
-import Dashboard from './components/dashboard/dashboard.component';
+//import Dashboard from './components/dashboard/dashboard.component';
+import ReadManga from './routes/readManga/readManga';
 
 const App = () => {
     return (
@@ -15,6 +16,7 @@ const App = () => {
                         <Route path="/" element={<Home />} />
                         <Route path="*" element={<PageNotFound />} />
                         <Route path="/manga/:id" element={<MangaDetail />} />
+                        <Route path="/manga/:id/:chapter" element={<ReadManga />} />
                     </Routes>
                 </div>
                 

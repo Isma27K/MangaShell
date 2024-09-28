@@ -33,11 +33,31 @@ $avatar-size-xxl: 55px;
 
     .nav-search {
         flex-grow: 1;
-        max-width: 400px;
+        max-width: 600px;
         margin: 0 20px;
 
-        .ant-input {
-            border-radius: 20px;
+        .ant-select-auto-complete {
+            width: 100%;
+
+            .ant-select-item-option-content {
+                display: flex;
+                align-items: center;
+
+                .ant-image {
+                    flex-shrink: 0;
+                    margin-right: 10px;
+                    
+                    img {
+                        object-fit: cover;
+                        border-radius: 4px;
+                    }
+                }
+
+                span {
+                    white-space: normal;
+                    word-break: break-word;
+                }
+            }
         }
     }
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Checkbox, Collapse } from 'antd';
+import { Layout, Checkbox, Collapse, Skeleton } from 'antd';
 import CustomCard from '../card/card.component.jsx';
 import './dashboard.style.scss';
 
@@ -62,9 +62,7 @@ const Dashboard = () => {
       <Layout className="content-layout">
         <Content className="content-style">
           {loading ? (
-            <div className="loading-container">
-              <p className="loading-text">Loading your manga collection...</p>
-            </div>
+            <Skeleton active />
           ) : (
             <div className="card-container">
               {cardsData.map((card, index) => (
