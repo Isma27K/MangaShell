@@ -1,36 +1,36 @@
 .custom-card {
-  height: 100%; // Make the card take full height of its container
-  display: flex;
-  flex-direction: column;
+  width: 100%;
+  
+  .ant-card-body {
+    padding: 8px;
+  }
 
   .ant-card-cover {
-    flex: 1; // Allow the cover to grow and take available space
-    overflow: hidden; // Hide overflow
-
     img {
-      width: 20vw;
-      height: 45vh;
-      object-fit: cover; // This will cover the area, potentially cropping the image
-      object-position: center; // Center the image
+      object-fit: cover;
+      height: 300px;
+      width: 100%;
     }
   }
 
   .card-content {
-    padding: 8px;
-    
     .card-title {
-      font-size: 14px;
+      font-size: 16px;
       font-weight: bold;
+      margin-bottom: 4px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
     .card-description {
-      font-size: 12px;
-      overflow: hidden;
+      font-size: 14px;
+      color: #666;
       display: -webkit-box;
+      //-webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.3;
     }
   }
 }
