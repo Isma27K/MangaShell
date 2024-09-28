@@ -1,0 +1,15 @@
+@import '../../styles/variables';
+
+.manga-detail-page {
+    .manga-detail-content {
+        padding-top: 60px; // Adjust this value based on your nav height
+    }
+}
+
+@media (max-width: 768px) {
+    .manga-detail-page {
+        .manga-detail-content {
+            padding-top: 100px; // Increase padding for mobile view
+        }
+    }
+}

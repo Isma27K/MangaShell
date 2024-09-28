@@ -1,0 +1,36 @@
+.custom-card {
+  height: 100%; // Make the card take full height of its container
+  display: flex;
+  flex-direction: column;
+
+  .ant-card-cover {
+    flex: 1; // Allow the cover to grow and take available space
+    overflow: hidden; // Hide overflow
+
+    img {
+      width: 20vw;
+      height: 45vh;
+      object-fit: cover; // This will cover the area, potentially cropping the image
+      object-position: center; // Center the image
+    }
+  }
+
+  .card-content {
+    padding: 8px;
+    
+    .card-title {
+      font-size: 14px;
+      font-weight: bold;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-description {
+      font-size: 12px;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+    }
+  }
+}

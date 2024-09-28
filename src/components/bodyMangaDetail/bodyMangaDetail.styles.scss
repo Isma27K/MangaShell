@@ -1,0 +1,157 @@
+@import '../../styles/variables';
+
+.manga-detail {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: $font-family;
+
+    .ant-row {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .ant-col {
+        margin-bottom: 20px;
+    }
+
+    .ant-card {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid $border-color;
+        box-shadow: $box-shadow;
+    }
+
+    .manga-info-card {
+        .ant-card-body {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .manga-header {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+
+            .manga-cover-container {
+                flex-shrink: 0;
+                width: 200px;
+                height: 300px;
+                overflow: hidden;
+                border-radius: 4px;
+                box-shadow: $box-shadow;
+
+                .manga-cover {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+            }
+
+            .manga-info {
+                flex: 1;
+
+                .ant-typography {
+                    margin-bottom: 8px;
+                }
+
+                .manga-genres {
+                    margin-top: 16px;
+
+                    .ant-tag {
+                        margin-bottom: 8px;
+                    }
+                }
+            }
+        }
+
+        .manga-description {
+            flex-grow: 1;
+            position: relative;
+            padding-bottom: 40px; // Add padding at the bottom for the button
+
+            &.expanded {
+                max-height: none;
+            }
+
+            .ant-typography {
+                margin-bottom: 20px; // Add some space between the text and button
+            }
+
+            .expand-button {
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: $background-color;
+                border: 1px solid $border-color;
+                box-shadow: 0 -5px 5px $background-color;
+                z-index: 1; // Ensure the button is above the text
+            }
+        }
+    }
+
+    .manga-chapters {
+        .ant-card-body {
+            overflow-y: auto;
+            max-height: 600px;
+        }
+
+        .ant-list-item {
+            padding: 12px 0;
+            border-bottom: 1px solid $border-color;
+
+            &:hover {
+                background-color: $hover-color;
+            }
+
+            a {
+                display: flex;
+                justify-content: space-between;
+                width: 100%;
+                color: $text-color;
+                text-decoration: none;
+
+                &:hover {
+                    color: $primary-color;
+                }
+            }
+        }
+    }
+}
+
+.error, .not-found {
+    text-align: center;
+    padding: 50px;
+    font-size: 1.5em;
+    color: $error-color;
+}
+
+@media (max-width: 768px) {
+    .manga-detail {
+        .manga-info-card {
+            .manga-header {
+                flex-direction: column;
+
+                .manga-cover-container {
+                    width: 100%;
+                    height: auto;
+                    max-width: 300px;
+                    margin: 0 auto;
+                }
+            }
+
+            .manga-description {
+                max-height: 240px; // Increase the max-height
+                overflow: hidden;
+                transition: max-height 0.3s ease;
+
+                &.expanded {
+                    max-height: none;
+                }
+            }
+        }
+    }
+}

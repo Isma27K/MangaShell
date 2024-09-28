@@ -6,31 +6,83 @@
     background: #fff;
     position: fixed;
     left: 0;
-    top: 13vh; // Assuming your Nav is 64px high
-    height: 85vh;
+    top: 13vh; // Adjust this value to match your navbar height
+    height: calc(98vh - 13vh);
     overflow-y: auto;
     border-right: 1px solid #e8e8e8;
     border-radius: 10px;
-    margin-left: 10px;
+  }
+
+  .filter-container {
+    //padding: 16px;
+
+    .filter-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
+
+    .ant-collapse-ghost {
+      .ant-collapse-header {
+        padding: 12px 0;
+        font-weight: 500;
+      }
+
+      .ant-collapse-content-box {
+        padding: 0;
+      }
+    }
+
+    .genre-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+
+      .ant-checkbox-wrapper {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+
+  .content-layout {
+    margin-left: 250px; // Add this line to push content to the right of the sidebar
+    padding: 24px;
   }
 
   .content-style {
     background: #fff;
     padding: 24px;
-    margin: 0;
     min-height: 280px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 
   .card-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
 
-    .card-item {
-      flex: 1 0 22%; // Updated from 30% to 22%
-      margin: 10px;
+  @media (max-width: 768px) {
+    .sider-style {
+      display: none; // Hide sidebar on mobile
+    }
+
+    .content-layout {
+      margin-left: 0; // Remove left margin on mobile
+      padding: 8px;
+    }
+
+    .content-style {
+      padding: 12px;
+    }
+
+    .card-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
   }
 }

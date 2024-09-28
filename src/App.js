@@ -1,9 +1,12 @@
+import React from 'react';
 import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './routes/home/Home.Routes';
 import PageNotFound from "./routes/404/404.Routes";
+import MangaDetail from './routes/mangaPage/mangaDetail';
+import Dashboard from './components/dashboard/dashboard.component';
 
-function App() {
+const App = () => {
     return (
         <Router>
             <div className="app-container">
@@ -11,12 +14,13 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="*" element={<PageNotFound />} />
+                        <Route path="/manga/:id" element={<MangaDetail />} />
                     </Routes>
                 </div>
                 
             </div>
         </Router>
     );
-}
+};
 
 export default App;

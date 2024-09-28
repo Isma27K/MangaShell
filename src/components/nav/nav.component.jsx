@@ -1,86 +1,68 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom'; // Corrected import for Link
-import { ShoppingCartOutlined, DownloadOutlined, BookOutlined, SettingOutlined, LogoutOutlined } from '@ant-design/icons';
-import { Avatar, Input, Button, Badge, Drawer, Menu, Dropdown } from 'antd';
-
-// Import assets
-import AvatarImage from "../../asset/test/avatar/OIP.jpeg";
-import './nav.style.scss'; // Import the SCSS file for styling
-
-const avatarSize = {
-    xs: 30, sm: 35, md: 40, lg: 45, xl: 50, xxl: 55
-};
+import { Link } from 'react-router-dom';
+import { Input, Button, Drawer } from 'antd';
+import { MenuOutlined, HomeOutlined, BookOutlined, UserOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import './nav.style.scss';
+import { useNavigate } from 'react-router-dom';
 
 const Nav = () => {
-    const [cartItems] = useState(2); // If not used, you can remove setCartItems
-    const [isDrawerVisible, setDrawerVisible] = useState(false);
-    const handleCartClick = () => {
-        setDrawerVisible(true);
+    const navigate = useNavigate();
+    const [visible, setVisible] = useState(false);
+
+    const showDrawer = () => {
+        setVisible(true);
     };
 
-    const handleDrawerClose = () => {
-        setDrawerVisible(false);
+    const onClose = () => {
+        setVisible(false);
     };
-
-    // Define menu items for the avatar dropdown
-    const menu = (
-        <Menu className="menu">
-            <Menu.Item key="1" icon={<DownloadOutlined />} className="menu-item">
-                Downloads
-            </Menu.Item>
-            <Menu.Item key="2" icon={<BookOutlined />} className="menu-item">
-                Saved
-            </Menu.Item>
-            <Menu.Item key="3" icon={<SettingOutlined />} className="menu-item">
-                Settings
-            </Menu.Item>
-            <Menu.Item key="4" icon={<LogoutOutlined />} className="menu-item">
-                Logout
-            </Menu.Item>
-        </Menu>
-    );
 
     return (
-        <>
-            <nav className="nav">
+        <nav className="nav">
+            <div className="nav-content">
+                <div className="nav-title">
+                    <h2 onClick={() => navigate('/')}>MangaShell</h2>
+                </div>
                 <div className="nav-search">
                     <Input placeholder="What's In Your Mind..." />
                 </div>
-                <div className="nav-title">
-                    <Link to="/"><h2>Rata.Code</h2></Link> {/* Corrected usage of Link */}
-                </div>
-
-                <div className="nav-cart-avatar">
-                    <Button type="text" onClick={handleCartClick}>
-                        <Badge count={cartItems} showZero>
-                            <ShoppingCartOutlined className="cart-icon" />
-                        </Badge>
+                <div className="burger-menu">
+                    <Button type="text" onClick={showDrawer}>
+                        <MenuOutlined />
                     </Button>
-
-                    {/* Avatar with Dropdown */}
-                    <Dropdown overlay={menu} trigger={['click']} placement="bottomRight">
-                        <Avatar
-                            size={avatarSize.xxl}
-                            src={AvatarImage}
-                            className="avatar"
-                        />
-                    </Dropdown>
-
                 </div>
-            </nav>
-
+            </div>
             <Drawer
-                title="Shopping Cart"
+                title="Menu"
                 placement="right"
-                onClose={handleDrawerClose}
-                open={isDrawerVisible} // Updated to use 'open'
-                width={300}
+                onClose={onClose}
+                open={visible}
+                className="mobile-menu"
             >
-                <p>Item 1</p>
-                <p>Item 2</p>
-                <p>Item 3</p>
+                <ul className="menu-list">
+                    <li className="menu-item">
+                        <Link to="/" onClick={onClose}>
+                            <HomeOutlined /> Home
+                        </Link>
+                    </li>
+                    <li className="menu-item">
+                        <Link to="/browse" onClick={onClose}>
+                            <BookOutlined /> Browse Manga
+                        </Link>
+                    </li>
+                    <li className="menu-item">
+                        <Link to="/profile" onClick={onClose}>
+                            <UserOutlined /> Profile
+                        </Link>
+                    </li>
+                    <li className="menu-item">
+                        <Link to="/about" onClick={onClose}>
+                            <InfoCircleOutlined /> About
+                        </Link>
+                    </li>
+                </ul>
             </Drawer>
-        </>
+        </nav>
     );
 }
 

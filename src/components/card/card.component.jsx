@@ -1,25 +1,29 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Card } from 'antd';
-import PropTypes from 'prop-types';
+import './card.style.scss';
 
 const { Meta } = Card;
 
-const CustomCard = ({ image, title, description }) => {
+const CustomCard = memo(({ title, description, cover_image }) => {
+  const truncateDescription = (text, maxLength = 100) => {
+    if (text.length <= maxLength) return text;
+    return text.substr(0, maxLength) + '...';
+  };
+
   return (
     <Card
       hoverable
-      cover={<img alt={title} src={image} />}
-      style={{ width: 225, margin: '16px auto' }} // Reduced width by 1/4
+      cover={<img alt={title} src={cover_image} loading="lazy" />}
+      className="custom-card"
     >
-      <Meta title={title} description={description} />
+      <div className="card-content">
+        <Meta
+          title={<div className="card-title">{title}</div>}
+          description={<div className="card-description">{truncateDescription(description)}</div>}
+        />
+      </div>
     </Card>
   );
-};
-
-CustomCard.propTypes = {
-  image: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
-  description: PropTypes.string.isRequired,
-};
+});
 
 export default CustomCard;
