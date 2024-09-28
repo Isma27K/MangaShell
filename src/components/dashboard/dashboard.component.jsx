@@ -9,7 +9,6 @@ const { Panel } = Collapse;
 const Dashboard = () => {
   const [cardsData, setCardsData] = useState([]);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
@@ -75,6 +74,7 @@ const Dashboard = () => {
                     description={card.description}
                     cover_image={card.cover_image}
                     genres={card.genres} // Add this line to pass genres
+                    id={card._id}
                   />
                 </div>
               ))}
