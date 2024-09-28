@@ -27,10 +27,37 @@
       font-size: 14px;
       color: #666;
       display: -webkit-box;
-      //-webkit-line-clamp: 2;
+      -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
+      line-clamp: 3; // Add this line for compatibility
       line-height: 1.3;
+    }
+  }
+}
+
+.card-popover {
+  max-width: 300px;
+
+  .ant-popover-inner-content {
+    padding: 12px;
+  }
+
+  .card-popover-content {
+    h3 {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    p {
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .genre-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
     }
   }
 }
