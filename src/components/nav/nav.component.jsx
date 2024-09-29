@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AutoComplete, Button, Drawer, Image } from 'antd';
 import { MenuOutlined, HomeOutlined, BookOutlined, UserOutlined, InfoCircleOutlined } from '@ant-design/icons';
@@ -7,12 +7,31 @@ import './nav.style.scss';
 // Add this import for a fallback image
 import fallbackImage from '../../asset/fallback-image.png'; // Make sure to add a fallback image to your assets
 
+// Add this function to truncate text
+const truncateText = (text, maxLength) => {
+  if (text.length <= maxLength) return text;
+  return text.substr(0, maxLength - 3) + '...';
+};
+
 const Nav = () => {
     const navigate = useNavigate();
     const [visible, setVisible] = useState(false);
     const [options, setOptions] = useState([]);
     const [searchValue, setSearchValue] = useState('');
     const autoCompleteRef = useRef(null);
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+    useEffect(() => {
+        const handleResize = () => setWindowWidth(window.innerWidth);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    const getTitleMaxLength = () => {
+        if (windowWidth < 768) return 30;
+        if (windowWidth < 1024) return 40;
+        return 70;
+    };
 
     const showDrawer = () => {
         setVisible(true);
@@ -28,6 +47,7 @@ const Nav = () => {
             try {
                 const response = await fetch(`http://localhost:5000/api/search?q=${value}`);
                 const data = await response.json();
+                const titleMaxLength = getTitleMaxLength();
                 const formattedOptions = data.map(item => ({
                     value: item._id.toString(), // Use _id as the value
                     label: (
@@ -43,7 +63,7 @@ const Nav = () => {
                                     console.log(`Failed to load image for ${item.title}`);
                                 }}
                             />
-                            <span>{item.title}</span>
+                            <span>{truncateText(item.title, titleMaxLength)}</span>
                         </div>
                     ),
                 }));
