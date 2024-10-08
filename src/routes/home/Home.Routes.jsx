@@ -11,7 +11,7 @@ const Home = () => {
             <div style={{ paddingTop: '10vh' }}> {/* Adjust this value based on your nav height */}
                 <Dashboard />
             </div>
-            <Footer />
+            {/*<Footer />*/}
         </div>
     )
 }

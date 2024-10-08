@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Checkbox, Collapse } from 'antd';
+import { Layout, Checkbox, Collapse, Skeleton } from 'antd';
 import CustomCard from '../card/card.component.jsx';
 import './dashboard.style.scss';
 
@@ -9,7 +9,6 @@ const { Panel } = Collapse;
 const Dashboard = () => {
   const [cardsData, setCardsData] = useState([]);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
@@ -63,9 +62,7 @@ const Dashboard = () => {
       <Layout className="content-layout">
         <Content className="content-style">
           {loading ? (
-            <div className="loading-container">
-              <p className="loading-text">Loading your manga collection...</p>
-            </div>
+            <Skeleton active />
           ) : (
             <div className="card-container">
               {cardsData.map((card, index) => (
@@ -75,7 +72,7 @@ const Dashboard = () => {
                     description={card.description}
                     cover_image={card.cover_image}
                     genres={card.genres} // Add this line to pass genres
-                    linkTo={`/manga/${card._id}`}
+                    id={card._id}
                   />
                 </div>
               ))}

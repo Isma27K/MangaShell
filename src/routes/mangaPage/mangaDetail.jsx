@@ -11,7 +11,7 @@ const MangaDetail = () => {
             <div className="manga-detail-content">
                 <BodyMangaDetail />
             </div>
-            <Footer />
+            {/*<Footer />*/}
         </div>
     )
 }

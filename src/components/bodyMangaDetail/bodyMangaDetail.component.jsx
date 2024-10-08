@@ -82,7 +82,7 @@ const BodyMangaDetail = () => {
                             dataSource={manga.chapters}
                             renderItem={(chapter) => (
                                 <List.Item>
-                                    <Link to={`/${id}/${chapter._id}`} target="_blank" rel="noopener noreferrer">
+                                    <Link to={`/manga/${id}/${chapter._id}`} rel="noopener noreferrer">
                                         <Text strong>{chapter.title}</Text>
                                         <Text type="secondary">{chapter.release_date}</Text>
                                     </Link>
