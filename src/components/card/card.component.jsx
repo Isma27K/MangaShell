@@ -1,8 +1,11 @@
 import React, { memo } from 'react';
 import { Card, Popover, Tag } from 'antd';
+import { useNavigate } from 'react-router-dom';
 import './card.style.scss';
 
-const CustomCard = memo(({ title, description, cover_image, genres = [] }) => {
+const CustomCard = memo(({ title, description, cover_image, genres = [], linkTo }) => {
+  const navigate = useNavigate();
+
   const truncateText = (text, maxLength) => {
     if (text.length <= maxLength) return text;
     return text.slice(0, maxLength) + '...';
@@ -23,6 +26,12 @@ const CustomCard = memo(({ title, description, cover_image, genres = [] }) => {
     </div>
   );
 
+  const handleCardClick = () => {
+    if (linkTo) {
+      navigate(linkTo);
+    }
+  };
+
   return (
     <Popover
       content={content}
@@ -39,6 +48,7 @@ const CustomCard = memo(({ title, description, cover_image, genres = [] }) => {
         hoverable
         cover={<img src={cover_image} alt={title} loading="lazy" />}
         className="custom-card"
+        onClick={handleCardClick}
       >
         <div className="card-content">
           <h3 className="card-title">{truncateText(title, 50)}</h3>
