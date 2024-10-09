@@ -6,6 +6,9 @@ import PageNotFound from "./routes/404/404.Routes";
 import MangaDetail from './routes/mangaPage/mangaDetail';
 //import Dashboard from './components/dashboard/dashboard.component';
 import ReadManga from './routes/readManga/readManga';
+import Profile from './routes/profile/profile';
+import Login from './routes/login/login'
+import Register from './routes/register/register'
 
 const App = () => {
     return (
@@ -17,6 +20,9 @@ const App = () => {
                         <Route path="*" element={<PageNotFound />} />
                         <Route path="/manga/:id" element={<MangaDetail />} />
                         <Route path="/manga/:id/:chapter" element={<ReadManga />} />
+                        <Route path="/profile" element={<Profile />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path='/register' element={<Register/>} />
                     </Routes>
                 </div>
                 
