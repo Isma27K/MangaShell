@@ -1,9 +1,9 @@
 import React, { memo } from 'react';
-import { Card, Popover, Tag } from 'antd';
+import { Card, Popover, Tag, List } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import './card.style.scss';
 
-const CustomCard = memo(({ title, description, cover_image, genres = [], id }) => {
+const CustomCard = memo(({ title, description, cover_image, genres = [], id, isMobile }) => {
   const navigate = useNavigate();
   const truncateText = (text, maxLength) => {
     if (text.length <= maxLength) return text;
@@ -25,6 +25,22 @@ const CustomCard = memo(({ title, description, cover_image, genres = [], id }) =
     </div>
   );
 
+  const handleClick = () => {
+    navigate(`/manga/${id}`);
+  };
+
+  if (isMobile) {
+    return (
+      <List.Item onClick={handleClick} className="mobile-list-item">
+        <List.Item.Meta
+          avatar={<img src={cover_image} alt={title} className="mobile-cover-image" />}
+          title={<span>{title}</span>}
+          description={truncateText(description, 100)}
+        />
+      </List.Item>
+    );
+  }
+
   return (
     <Popover
       content={content}
@@ -41,7 +57,7 @@ const CustomCard = memo(({ title, description, cover_image, genres = [], id }) =
         hoverable
         cover={<img src={cover_image} alt={title} loading="lazy" />}
         className="custom-card"
-        onClick={() => navigate(`/manga/${id}`)}
+        onClick={handleClick}
       >
         <div className="card-content">
           <h3 className="card-title">{truncateText(title, 50)}</h3>
