@@ -1,0 +1,17 @@
+.profile-layout {
+  min-height: 100vh;
+  background-color: #f0f2f5;
+
+  .ant-layout-content {
+    margin-top: 64px; // Adjust this value to match your navbar height
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-layout {
+    .ant-layout-content {
+      margin-top: 100px; // Adjust this value for mobile navbar height
+      padding-top: 25px; // Add some top padding for mobile view
+    }
+  }
+}
