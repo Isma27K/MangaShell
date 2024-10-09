@@ -16,7 +16,7 @@ const BodyMangaDetail = () => {
     useEffect(() => {
         const fetchManga = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/data/${id}`);
+                const response = await axios.get(`https://api.ratacode.top/data/${id}`);
                 setManga(response.data);
                 setLoading(false);
             } catch (err) {

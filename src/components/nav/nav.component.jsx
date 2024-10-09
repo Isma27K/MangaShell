@@ -45,7 +45,7 @@ const Nav = () => {
         setSearchValue(value);
         if (value) {
             try {
-                const response = await fetch(`http://localhost:5000/api/search?q=${value}`);
+                const response = await fetch(`https://api.ratacode.top/api/search?q=${value}`);
                 const data = await response.json();
                 const titleMaxLength = getTitleMaxLength();
                 const formattedOptions = data.map(item => ({

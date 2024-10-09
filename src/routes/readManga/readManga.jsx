@@ -29,7 +29,7 @@ const ReadManga = () => {
     const fetchMangaInfo = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:5000/data/${id}`);
+            const response = await fetch(`https://api.ratacode.top/data/${id}`);
             if (!response.ok) throw new Error('Failed to fetch manga info');
             const data = await response.json();
             setMangaInfo(data);
@@ -44,7 +44,7 @@ const ReadManga = () => {
     const fetchChapterImages = async (chapterId) => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:5000/data/${id}/${chapterId}`);
+            const response = await fetch(`https://api.ratacode.top/data/${id}/${chapterId}`);
             if (!response.ok) throw new Error('Failed to fetch chapter images');
             const data = await response.json();
             setImages(data);

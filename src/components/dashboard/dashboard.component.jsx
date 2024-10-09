@@ -16,7 +16,7 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:5000/data/getManga', { signal });
+        const response = await fetch('https://api.ratacode.top/data/getManga', { signal });
         const data = await response.json();
         setCardsData(data);
       } catch (error) {
