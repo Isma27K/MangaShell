@@ -1,5 +1,0 @@
-# https://www.robotstxt.org/robotstxt.html
-User-agent: *
-Allow: /
-
-Sitemap: https://your-website-url.com/sitemap.xml

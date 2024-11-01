@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './routes/home/Home.Routes';
 import PageNotFound from "./routes/404/404.Routes";
 import MangaDetail from './routes/mangaPage/mangaDetail';
-//import Dashboard from './components/dashboard/dashboard.component';
 import ReadManga from './routes/readManga/readManga';
 import Profile from './routes/profile/profile';
 import Login from './routes/login/login'
@@ -25,7 +24,6 @@ const App = () => {
                         <Route path='/register' element={<Register/>} />
                     </Routes>
                 </div>
-                
             </div>
         </Router>
     );

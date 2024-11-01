@@ -127,6 +127,9 @@
     padding: 50px;
     font-size: 1.5em;
     color: $error-color;
+    .not-found-text{
+        padding-bottom: 20rem;
+    }
 }
 
 @media (max-width: 768px) {

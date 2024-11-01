@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Card, Typography, Tag, List, Skeleton, Row, Col, Space, Button } from 'antd';
 import './bodyMangaDetail.styles.scss';
+import noMangaFound from '../../asset/fallback-image.png';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -16,7 +17,7 @@ const BodyMangaDetail = () => {
     useEffect(() => {
         const fetchManga = async () => {
             try {
-                const response = await axios.get(`https://api.ratacode.top/data/${id}`);
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/data/${id}`);
                 setManga(response.data);
                 setLoading(false);
             } catch (err) {
@@ -29,8 +30,25 @@ const BodyMangaDetail = () => {
     }, [id]);
 
     if (loading) return <Skeleton active />;
-    if (error) return <div className="error">{error}</div>;
-    if (!manga) return <div className="not-found">No manga found</div>;
+    //if (error) return <div className="error">{error}</div>;
+
+    if (error){
+        return (
+            <div className="not-found" style={{ textAlign: 'center' }}> 
+                <span className="not-found-text" style={{ fontSize: '2rem', marginBottom: '2rem' }}>No manga found</span><br />
+                <img src={noMangaFound} alt="No manga found" style={{ width: '40vh' }}/>
+            </div>
+        );
+    }
+
+    if (!manga) { // if the are no mangga
+        return (
+            <div className="not-found" style={{ textAlign: 'center', marginTop: '35vh' }}>
+                <img src={noMangaFound} alt="No manga found" />
+                No manga found
+            </div>
+        );
+    }
 
     const truncateDescription = (text, maxLength) => {
         if (text.length <= maxLength) return text;

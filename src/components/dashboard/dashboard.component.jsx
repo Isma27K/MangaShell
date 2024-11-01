@@ -29,7 +29,7 @@ const Dashboard = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch('https://api.ratacode.top/data/getManga', { signal });
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/data/getManga`, { signal });
         if (!response.ok) {
           throw new Error('Failed to fetch manga data');
         }
