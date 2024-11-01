@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Spin, Button, message, Breadcrumb } from 'antd';
-import { LeftOutlined, RightOutlined, HomeOutlined } from '@ant-design/icons';
+import { Spin, Button, message, Breadcrumb, Select, FloatButton } from 'antd';
+import { LeftOutlined, RightOutlined, HomeOutlined, VerticalAlignTopOutlined } from '@ant-design/icons';
 import './readManga.style.scss';
 
 const ReadManga = () => {
     const { id, chapter } = useParams();
     const navigate = useNavigate();
     const [images, setImages] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [initialLoading, setInitialLoading] = useState(true);
     const [mangaInfo, setMangaInfo] = useState(null);
     const [currentChapter, setCurrentChapter] = useState(null);
+    const [priorityLoad, setPriorityLoad] = useState(() => {
+        const savedPriority = localStorage.getItem('mangaPriorityLoad');
+        return savedPriority ? parseInt(savedPriority) : 5;
+    });
 
     useEffect(() => {
         fetchMangaInfo();
@@ -27,7 +31,7 @@ const ReadManga = () => {
     }, [mangaInfo, chapter]);
 
     const fetchMangaInfo = async () => {
-        setLoading(true);
+        setInitialLoading(true);
         try {
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/data/${id}`);
             if (!response.ok) throw new Error('Failed to fetch manga info');
@@ -37,22 +41,62 @@ const ReadManga = () => {
             console.error('Error fetching manga info:', error);
             message.error('Failed to load manga information');
         } finally {
-            setLoading(false);
+            setInitialLoading(false);
         }
     };
 
     const fetchChapterImages = async (chapterId) => {
-        setLoading(true);
-        try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/data/${id}/${chapterId}`);
-            if (!response.ok) throw new Error('Failed to fetch chapter images');
-            const data = await response.json();
-            setImages(data);
-        } catch (error) {
-            console.error('Error fetching chapter images:', error);
+        setImages([]);
+
+        const eventSource = new EventSource(
+            `${process.env.REACT_APP_BACKEND_URL}/data/${id}/${chapterId}`
+        );
+
+        let pendingImages = [];
+
+        eventSource.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+
+            if (data.end) {
+                eventSource.close();
+                setImages(prev => [...prev, ...pendingImages]);
+                return;
+            }
+
+            if (data.error) {
+                console.error(`Error loading image ${data.index}: ${data.error}`);
+                return;
+            }
+
+            const imageUrl = `${process.env.REACT_APP_BACKEND_URL}/data/proxy-image?url=${encodeURIComponent(data.url)}`;
+            
+            if (data.index < priorityLoad) {
+                setImages(prevImages => {
+                    const newImages = [...prevImages];
+                    newImages[data.index] = imageUrl;
+                    return newImages;
+                });
+            } else {
+                pendingImages[data.index - priorityLoad] = imageUrl;
+            }
+        };
+
+        eventSource.onerror = (error) => {
+            console.error('EventSource failed:', error);
+            eventSource.close();
             message.error('Failed to load chapter images');
-        } finally {
-            setLoading(false);
+        };
+
+        return () => {
+            eventSource.close();
+        };
+    };
+
+    const handlePriorityChange = (value) => {
+        setPriorityLoad(value);
+        localStorage.setItem('mangaPriorityLoad', value.toString());
+        if (currentChapter) {
+            fetchChapterImages(currentChapter._id);
         }
     };
 
@@ -76,10 +120,12 @@ const ReadManga = () => {
     const isFirstChapter = currentChapter && mangaInfo?.chapters[0]._id === currentChapter._id;
     const isLastChapter = currentChapter && mangaInfo?.chapters[mangaInfo.chapters.length - 1]._id === currentChapter._id;
 
-    if (loading) {
+    if (initialLoading) {
         return (
             <div className="read-manga-container">
-                <Spin size="large" />
+                <div className="loading-overlay">
+                    <Spin size="large" />
+                </div>
             </div>
         );
     }
@@ -97,7 +143,56 @@ const ReadManga = () => {
                     <Breadcrumb.Item>{currentChapter?.title}</Breadcrumb.Item>
                 </Breadcrumb>
                 <h1>{mangaInfo?.title} - {currentChapter?.title}</h1>
+                <div className="loading-controls">
+                    <span>Priority Load: </span>
+                    <Select
+                        value={priorityLoad}
+                        onChange={handlePriorityChange}
+                        options={[
+                            { value: 1, label: 'First Image' },
+                            { value: 3, label: 'First 3 Images' },
+                            { value: 5, label: 'First 5 Images' },
+                            { value: 10, label: 'First 10 Images' },
+                            { value: Infinity, label: 'Load All' }
+                        ]}
+                        className="priority-select"
+                    />
+                </div>
                 <div className="chapter-navigation top">
+                    <div className="navigation-content">
+                        <div className="left-nav">
+                            {!isLastChapter && (
+                                <Button onClick={() => navigateChapter('prev')}>
+                                    <LeftOutlined /> Previous Chapter
+                                </Button>
+                            )}
+                        </div>
+                        <div className="right-nav">
+                            {!isFirstChapter && (
+                                <Button onClick={() => navigateChapter('next')}>
+                                    Next Chapter <RightOutlined />
+                                </Button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="manga-images">
+                {images.map((imageUrl, index) => (
+                    imageUrl && (
+                        <img 
+                            key={index}
+                            src={imageUrl}
+                            alt={`Page ${index + 1}`}
+                            className="manga-page"
+                        />
+                    )
+                ))}
+            </div>
+
+            <div className="chapter-navigation-bottom">
+                <div className="navigation-content">
                     {!isLastChapter && (
                         <Button onClick={() => navigateChapter('prev')}>
                             <LeftOutlined /> Previous Chapter
@@ -110,27 +205,14 @@ const ReadManga = () => {
                     )}
                 </div>
             </div>
-            <div className="manga-images">
-                {images.map((image, index) => (
-                    <img 
-                        key={index} 
-                        src={`data:${image.contentType};base64,${image.data}`} 
-                        alt={`Page ${index + 1}`}
-                    />
-                ))}
-            </div>
-            <div className="chapter-navigation bottom">
-                {!isLastChapter && (
-                    <Button onClick={() => navigateChapter('prev')}>
-                        <LeftOutlined /> Previous Chapter
-                    </Button>
-                )}
-                {!isFirstChapter && (
-                    <Button onClick={() => navigateChapter('next')}>
-                        Next Chapter <RightOutlined />
-                    </Button>
-                )}
-            </div>
+
+            <FloatButton.Group shape="circle" style={{ right: 24 }}>
+                <FloatButton
+                    icon={<VerticalAlignTopOutlined />}
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    className="desktop-only"
+                />
+            </FloatButton.Group>
         </div>
     );
 };

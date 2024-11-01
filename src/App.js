@@ -16,6 +16,7 @@ const App = () => {
                 <div className="content">
                     <Routes>
                         <Route path="/" element={<Home />} />
+                        <Route path="/page/:page" element={<Home />} />
                         <Route path="*" element={<PageNotFound />} />
                         <Route path="/manga/:id" element={<MangaDetail />} />
                         <Route path="/manga/:id/:chapter" element={<ReadManga />} />

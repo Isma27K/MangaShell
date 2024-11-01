@@ -1,0 +1,10 @@
+.home-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.home-content {
+    padding-top: 10vh; // Adjust based on your nav height
+    flex: 1;
+}

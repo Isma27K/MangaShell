@@ -1,16 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Checkbox, Collapse, Skeleton, List, message } from 'antd';
+import { Layout, Checkbox, Collapse, Skeleton, List, message, Pagination } from 'antd';
+import { useNavigate } from 'react-router-dom';
 import CustomCard from '../card/card.component.jsx';
 import './dashboard.style.scss';
 
 const { Sider, Content } = Layout;
 const { Panel } = Collapse;
 
-const Dashboard = () => {
+const Dashboard = ({ page }) => {
+
+  console.log(page);
+
   const [cardsData, setCardsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [currentPage, setCurrentPage] = useState(page);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(30);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleResize = () => {
@@ -29,12 +38,33 @@ const Dashboard = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/data/getManga`, { signal });
+        const response = await fetch(
+          `${process.env.REACT_APP_BACKEND_URL}/api/manga/getManga/${page}`, 
+          { signal }
+        );
+        if (response.status === 400 || response.status === 500) {
+          navigate('/page/1');
+          return;
+        }
         if (!response.ok) {
           throw new Error('Failed to fetch manga data');
         }
-        const data = await response.json();
-        setCardsData(data);
+        const result = await response.json();
+        
+        if (result.manga && Array.isArray(result.manga)) {
+          setCardsData(result.manga);
+        } else if (Array.isArray(result)) {
+          setCardsData(result);
+        } else {
+          setCardsData([]);
+        }
+        
+        if (result.pagination) {
+          setCurrentPage(result.pagination.currentPage);
+          setTotalPages(result.pagination.totalPages);
+          setTotalItems(result.pagination.totalItems);
+          setItemsPerPage(result.pagination.itemsPerPage);
+        }
       } catch (error) {
         if (error.name !== 'AbortError') {
           console.error('Error fetching manga data:', error);
@@ -49,7 +79,13 @@ const Dashboard = () => {
     fetchData();
 
     return () => controller.abort();
-  }, []);
+  }, [currentPage, navigate]);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    navigate(`/page/${page}`);
+    window.scrollTo(0, 0);
+  };
 
   const genreFilters = [
     'Comedy', 'Drama', 'Horror', 'Manhua', 'Mystery', 'Psychological',
@@ -61,13 +97,13 @@ const Dashboard = () => {
   ];
 
   const renderContent = () => {
-    if (loading || (!loading && cardsData.length === 0)) {
+    if (loading || (!cardsData || cardsData.length === 0)) {
       return isMobile ? (
         <List
           itemLayout="horizontal"
-          dataSource={Array(5).fill({})}
-          renderItem={() => (
-            <List.Item>
+          dataSource={[1, 2, 3, 4, 5, 6, 7, 8]}
+          renderItem={(_, index) => (
+            <List.Item key={index}>
               <Skeleton 
                 avatar={{ shape: "square", className: "square-avatar" }} 
                 active 
@@ -78,7 +114,7 @@ const Dashboard = () => {
         />
       ) : (
         <div className="card-container">
-          {Array(12).fill().map((_, index) => (
+          {[...Array(20)].map((_, index) => (
             <div key={index} className="card-item">
               <Skeleton active avatar paragraph={{ rows: 4 }} />
             </div>
@@ -89,6 +125,10 @@ const Dashboard = () => {
 
     if (error) {
       return <div className="error-message">{error}</div>;
+    }
+
+    if (!cardsData || cardsData.length === 0) {
+      return <div className="no-data-message">No manga found</div>;
     }
 
     if (isMobile) {
@@ -150,6 +190,19 @@ const Dashboard = () => {
       <Layout className="content-layout">
         <Content className="content-style">
           {renderContent()}
+          {!loading && !error && totalPages > 0 && (
+            <div className={`pagination-container ${isMobile ? 'mobile' : ''}`}>
+              <Pagination
+                current={currentPage}
+                total={totalItems}
+                pageSize={20}
+                onChange={handlePageChange}
+                showSizeChanger={false}
+                showQuickJumper={false}
+                size={isMobile ? 'small' : 'default'}
+              />
+            </div>
+          )}
         </Content>
       </Layout>
     </Layout>

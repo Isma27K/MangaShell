@@ -87,11 +87,18 @@ const Nav = () => {
         }
     };
 
+    // Update this function to handle the MangaShell click
+    const handleLogoClick = () => {
+        navigate('/');
+        // Force a reload to ensure we get fresh data for page 1
+        window.location.reload();
+    };
+
     return (
         <nav className="nav">
             <div className="nav-content">
                 <div className="nav-title">
-                    <h2 onClick={() => navigate('/')}>MangaShell</h2>
+                    <h2 onClick={handleLogoClick}>MangaShell</h2>
                 </div>
                 <div className="nav-search">
                     <AutoComplete
