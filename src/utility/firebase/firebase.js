@@ -143,5 +143,102 @@ export const signOutUser = async () => {
   }
 };
 
+// Function to add manga to user's collection
+export const addMangaToCollection = async (userId, mangaId) => {
+  if (!userId) throw new Error('User ID is required');
+  if (!mangaId) throw new Error('Manga ID is required');
+
+  try {
+    console.log('Starting addMangaToCollection...');
+    const userRef = doc(db, 'users', userId);
+    
+    // First, verify the document exists
+    const userDoc = await getDoc(userRef);
+    console.log('User document exists:', userDoc.exists());
+    
+    if (!userDoc.exists()) {
+      // Create the document if it doesn't exist
+      await setDoc(userRef, {
+        bookmarkedManga: [mangaId],
+        createdAt: serverTimestamp()
+      });
+      console.log('Created new user document with manga');
+      return;
+    }
+
+    // Get current bookmarks
+    const currentData = userDoc.data();
+    console.log('Current user data:', currentData);
+    
+    const bookmarkedManga = currentData.bookmarkedManga || [];
+    if (!bookmarkedManga.includes(mangaId)) {
+      const newBookmarkedManga = [...bookmarkedManga, mangaId];
+      console.log('Updating bookmarks:', newBookmarkedManga);
+      
+      await updateDoc(userRef, {
+        bookmarkedManga: newBookmarkedManga,
+        lastUpdated: serverTimestamp()
+      });
+    }
+  } catch (error) {
+    console.error('Error in addMangaToCollection:', error);
+    throw new Error(`Failed to add manga: ${error.message}`);
+  }
+};
+
+// Function to remove manga from user's collection
+export const removeMangaFromCollection = async (userId, mangaId) => {
+  if (!userId) throw new Error('User ID is required');
+  if (!mangaId) throw new Error('Manga ID is required');
+
+  try {
+    console.log('Starting removeMangaFromCollection...');
+    const userRef = doc(db, 'users', userId);
+    
+    const userDoc = await getDoc(userRef);
+    console.log('User document exists:', userDoc.exists());
+    
+    if (!userDoc.exists()) {
+      throw new Error('User document not found');
+    }
+
+    const currentData = userDoc.data();
+    console.log('Current user data:', currentData);
+    
+    const bookmarkedManga = currentData.bookmarkedManga || [];
+    const newBookmarkedManga = bookmarkedManga.filter(id => id !== mangaId);
+    
+    console.log('Updating bookmarks:', newBookmarkedManga);
+    await updateDoc(userRef, {
+      bookmarkedManga: newBookmarkedManga,
+      lastUpdated: serverTimestamp()
+    });
+  } catch (error) {
+    console.error('Error in removeMangaFromCollection:', error);
+    throw new Error(`Failed to remove manga: ${error.message}`);
+  }
+};
+
+// Add this function to verify and initialize user document if needed
+export const verifyUserDocument = async (userId) => {
+  try {
+    const userRef = doc(db, 'users', userId);
+    const userDoc = await getDoc(userRef);
+    
+    if (!userDoc.exists()) {
+      // Initialize user document if it doesn't exist
+      await setDoc(userRef, {
+        createdAt: serverTimestamp(),
+        bookmarkedManga: [],
+        lastUpdated: serverTimestamp()
+      });
+      console.log('Created new user document');
+    }
+  } catch (error) {
+    console.error('Error verifying user document:', error);
+    throw error;
+  }
+};
+
 // Export auth instance for use in other parts of the app
 export { auth, db, storage };

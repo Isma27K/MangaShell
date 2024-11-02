@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
-import { Card, Typography, Tag, List, Skeleton, Row, Col, Space, Button } from 'antd';
+import { Card, Typography, Tag, List, Skeleton, Row, Col, Space, Button, Modal } from 'antd';
 import noMangaFound from '../../asset/fallback-image.png';
 import { useMangaCache } from '../../hooks/useMangaCache';
 import { HeartFilled, HeartOutlined } from '@ant-design/icons';
 import './bodyMangaDetail.styles.scss';
+import { getAuth } from 'firebase/auth';
+import { addMangaToCollection, removeMangaFromCollection, verifyUserDocument } from '../../utility/firebase/firebase';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -21,6 +23,8 @@ const BodyMangaDetail = () => {
         removeManga,
         isChapterRead
     } = useMangaCache();
+    const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
+    const auth = getAuth();
 
     useEffect(() => {
         const fetchManga = async () => {
@@ -36,6 +40,20 @@ const BodyMangaDetail = () => {
 
         fetchManga();
     }, [id]);
+
+    useEffect(() => {
+        const verifyUser = async () => {
+            if (auth.currentUser) {
+                try {
+                    await verifyUserDocument(auth.currentUser.uid);
+                } catch (error) {
+                    console.error('Error verifying user document:', error);
+                }
+            }
+        };
+        
+        verifyUser();
+    }, [auth.currentUser]);
 
     if (loading) return <Skeleton active />;
 
@@ -66,12 +84,38 @@ const BodyMangaDetail = () => {
         setExpanded(!expanded);
     };
 
-    const handleSaveToggle = () => {
-        if (isInCollection(manga.id)) {
-            removeManga(manga.id);
-        } else {
-            saveManga(manga);
+    const handleSaveToggle = async () => {
+        if (!auth.currentUser) {
+            setIsLoginModalVisible(true);
+            return;
         }
+
+        try {
+            console.log('Starting save toggle operation');
+            console.log('Current user:', auth.currentUser);
+            console.log('Manga:', manga);
+            console.log('Manga ID:', id);
+
+            if (isInCollection(id)) {
+                console.log('Removing manga from collection...');
+                await removeMangaFromCollection(auth.currentUser.uid, id);
+                removeManga(id);
+            } else {
+                console.log('Adding manga to collection...');
+                await addMangaToCollection(auth.currentUser.uid, id);
+                saveManga(manga);
+            }
+        } catch (error) {
+            console.error("Detailed error in handleSaveToggle:", error);
+            Modal.error({
+                title: 'Error',
+                content: `Failed to update collection: ${error.message}`,
+            });
+        }
+    };
+
+    const handleLoginModalClose = () => {
+        setIsLoginModalVisible(false);
     };
 
     const ChapterListItem = ({ chapter }) => {
@@ -126,7 +170,10 @@ const BodyMangaDetail = () => {
                                         icon={isInCollection(manga.id) ? <HeartFilled /> : <HeartOutlined />}
                                         className="collection-button"
                                     >
-                                        {isInCollection(manga.id) ? 'In Collection' : 'Add to Collection'}
+                                        {auth.currentUser 
+                                            ? (isInCollection(manga.id) ? 'In Collection' : 'Add to Collection')
+                                            : 'Login to Save'
+                                        }
                                     </Button>
                                 </Space>
                                 <div className="manga-genres">
@@ -158,6 +205,19 @@ const BodyMangaDetail = () => {
                     </Card>
                 </Col>
             </Row>
+            <Modal
+                title="Login Required"
+                open={isLoginModalVisible}
+                onOk={() => {
+                    handleLoginModalClose();
+                    window.location.href = '/login';
+                }}
+                onCancel={handleLoginModalClose}
+                okText="Login"
+                cancelText="Cancel"
+            >
+                <p>You need to be logged in to add manga to your collection.</p>
+            </Modal>
         </div>
     );
 };

@@ -19,6 +19,8 @@ const ProfileBody = () => {
   const [editUsername, setEditUsername] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [bookmarkDetails, setBookmarkDetails] = useState([]);
+  const [loadingBookmarks, setLoadingBookmarks] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,7 +35,6 @@ const ProfileBody = () => {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
-        console.log('Current user:', user);
         try {
           const data = await getUserData(user.uid);
           console.log('Firestore user data:', data);
@@ -56,7 +57,37 @@ const ProfileBody = () => {
             });
             setImageUrl(photoURL);
             setEditUsername(data.username);
-            setBookmarkedManga(data.bookmarkedManga || []);
+            
+            const bookmarkIds = data.bookmarkedManga || [];
+            console.log('Bookmark IDs:', bookmarkIds);
+            setBookmarkedManga(bookmarkIds);
+
+            if (bookmarkIds.length > 0) {
+              setLoadingBookmarks(true);
+              try {
+                const mangaDetails = await Promise.all(
+                  bookmarkIds.map(async (id) => {
+                    try {
+                      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/data/${id}`);
+                      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                      return await response.json();
+                    } catch (error) {
+                      console.error(`Error fetching manga ${id}:`, error);
+                      return null;
+                    }
+                  })
+                );
+                
+                const validMangaDetails = mangaDetails.filter(manga => manga !== null);
+                console.log('Fetched manga details:', validMangaDetails);
+                setBookmarkDetails(validMangaDetails);
+              } catch (error) {
+                console.error('Error fetching manga details:', error);
+                message.error('Failed to load some manga details');
+              } finally {
+                setLoadingBookmarks(false);
+              }
+            }
           }
         } catch (error) {
           console.error("Error fetching user data:", error);
@@ -70,7 +101,7 @@ const ProfileBody = () => {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [navigate]);
 
   const handleEditProfile = () => {
     setIsEditModalVisible(true);
@@ -174,9 +205,8 @@ const ProfileBody = () => {
               onClick={handleEditProfile}
               type="primary"
               ghost
-            >
-              Edit Profile
-            </Button>
+              size="small"
+            />
           </div>
           <Text>{userData.email}</Text>
           <Text>Joined: {userData.joinDate}</Text>
@@ -184,17 +214,19 @@ const ProfileBody = () => {
       </Row>
       <Tabs defaultActiveKey="1">
         <TabPane tab={<span><BookOutlined />Bookmarked Manga</span>} key="1">
-          {bookmarkedManga.length > 0 ? (
+          {loadingBookmarks ? (
+            <Skeleton active />
+          ) : bookmarkDetails.length > 0 ? (
             <List
               grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 3, xl: 4, xxl: 4 }}
-              dataSource={bookmarkedManga}
-              renderItem={item => (
+              dataSource={bookmarkDetails}
+              renderItem={manga => (
                 <List.Item>
                   <CustomCard
-                    title={item.title}
-                    description={item.description}
-                    cover_image={item.cover_image}
-                    id={item.id}
+                    title={manga.title || 'Untitled'}
+                    description={manga.description || 'No description available'}
+                    cover_image={manga.cover_image}
+                    id={manga._id}
                     isMobile={isMobile}
                   />
                 </List.Item>
