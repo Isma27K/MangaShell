@@ -1,12 +1,12 @@
 .dashboard-layout {
   min-height: calc(100vh - 64px);
-  background: #f0f2f5;
+  //background: #f0f2f5;
 
   .sider-style {
     background: #fff;
     position: fixed;
     left: 0;
-    top: 13vh; // Adjust this value to match your navbar height
+    top: 12vh; // Adjust this value to match your navbar height
     height: calc(98vh - 13vh);
     overflow-y: auto;
     border-right: 1px solid #e8e8e8;

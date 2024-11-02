@@ -5,6 +5,12 @@
 }
 
 .home-content {
-    padding-top: 10vh; // Adjust based on your nav height
+    padding-top: 8vh; // Adjust based on your nav height
     flex: 1;
+}
+
+@media (max-width: 768px) {
+    .home-content {
+        padding-top: 10vh;
+    }
 }
