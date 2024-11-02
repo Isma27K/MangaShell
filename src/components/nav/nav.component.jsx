@@ -1,11 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AutoComplete, Button, Drawer, Image } from 'antd';
+import { AutoComplete, Button, Drawer, Image, Avatar } from 'antd';
 import { MenuOutlined, HomeOutlined, BookOutlined, UserOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { auth, getUserData } from '../../utility/firebase/firebase';
+import fallbackImage from '../../asset/fallback-image.png';
 import './nav.style.scss';
-
-// Add this import for a fallback image
-import fallbackImage from '../../asset/fallback-image.png'; // Make sure to add a fallback image to your assets
 
 // Add this function to truncate text
 const truncateText = (text, maxLength) => {
@@ -20,11 +19,33 @@ const Nav = () => {
     const [searchValue, setSearchValue] = useState('');
     const autoCompleteRef = useRef(null);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    const [userData, setUserData] = useState(null);
+    const [imageUrl, setImageUrl] = useState('');
 
     useEffect(() => {
         const handleResize = () => setWindowWidth(window.innerWidth);
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                try {
+                    const data = await getUserData(user.uid);
+                    const photoURL = user.photoURL || data?.photoURL || null;
+                    setUserData(data);
+                    setImageUrl(photoURL);
+                } catch (error) {
+                    console.error("Error fetching user data:", error);
+                }
+            } else {
+                setUserData(null);
+                setImageUrl('');
+            }
+        });
+
+        return () => unsubscribe();
     }, []);
 
     const getTitleMaxLength = () => {
@@ -111,11 +132,14 @@ const Nav = () => {
                         onChange={setSearchValue}
                         placeholder="What's In Your Mind..."
                     />
-                </div>
-                <div className="burger-menu">
-                    <Button type="text" onClick={showDrawer}>
-                        <MenuOutlined />
-                    </Button>
+                    <Avatar 
+                        size={32}
+                        src={imageUrl}
+                        icon={!imageUrl && <UserOutlined />}
+                        onClick={showDrawer}
+                        style={{ cursor: 'pointer' }}
+                        className="nav-avatar"
+                    />
                 </div>
             </div>
             <Drawer

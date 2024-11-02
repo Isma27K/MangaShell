@@ -16,7 +16,7 @@ $avatar-size-xxl: 55px;
     height: 7vh;
 
     .nav-content {
-        max-width: 1200px;
+        max-width: 100%;
         margin: 0 auto;
         display: flex;
         justify-content: space-between;
@@ -33,9 +33,17 @@ $avatar-size-xxl: 55px;
     }
 
     .nav-search {
-        flex-grow: 1;
-        max-width: 600px;
-        margin: 0 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        width: 40vw;
+        
+        .nav-avatar {
+            flex-shrink: 0;
+            &:hover {
+                opacity: 0.8;
+            }
+        }
 
         .ant-select-auto-complete {
             width: 100%;
@@ -61,36 +69,32 @@ $avatar-size-xxl: 55px;
             }
         }
     }
-
-    .burger-menu {
-        display: none;
-    }
 }
 
 @media (max-width: 768px) {
     .nav {
         height: 80px !important;
-        //padding-bottom: 30vh;
+        
         .nav-content {
             flex-wrap: wrap;
         }
 
         .nav-title {
             order: 1;
-            flex-basis: 50%;
+            flex-basis: 80%;
         }
 
         .nav-search {
             order: 3;
             flex-basis: 100%;
             margin: 10px 0 0;
-        }
-
-        .burger-menu {
-            display: block;
-            order: 2;
-            flex-basis: 50%;
-            text-align: right;
+            position: relative;
+            
+            .nav-avatar {
+                position: absolute;
+                right: 0;
+                top: -45px;
+            }
         }
     }
 }
