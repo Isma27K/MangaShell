@@ -25,6 +25,11 @@ const BodyMangaDetail = () => {
     const auth = getAuth();
     const navigate = useNavigate();
     const location = useLocation();
+    const [isSaving, setIsSaving] = useState(false);
+    const [toggleCount, setToggleCount] = useState(0);
+    const [lastResetTime, setLastResetTime] = useState(Date.now());
+    const TOGGLE_LIMIT = 6;
+    const RESET_INTERVAL = 60000; // 1 minute in milliseconds
 
     useEffect(() => {
         const fetchManga = async () => {
@@ -85,6 +90,21 @@ const BodyMangaDetail = () => {
     };
 
     const handleSaveToggle = async () => {
+        if (isSaving) return;
+
+        // Check if we need to reset the counter
+        const now = Date.now();
+        if (now - lastResetTime >= RESET_INTERVAL) {
+            setToggleCount(0);
+            setLastResetTime(now);
+        }
+
+        // Check if user has exceeded the toggle limit
+        if (toggleCount >= TOGGLE_LIMIT) {
+            message.error('You have reached the limit. Please wait a minute before trying again.');
+            return;
+        }
+        
         if (!auth.currentUser) {
             navigate('/login', { 
                 state: { 
@@ -96,6 +116,7 @@ const BodyMangaDetail = () => {
         }
 
         try {
+            setIsSaving(true);
             if (isInCollection(id)) {
                 await removeMangaFromCollection(auth.currentUser.uid, id);
                 message.success('Manga removed from collection');
@@ -103,12 +124,16 @@ const BodyMangaDetail = () => {
                 await addMangaToCollection(auth.currentUser.uid, id);
                 message.success('Manga added to collection');
             }
+            // Increment the toggle counter
+            setToggleCount(prev => prev + 1);
         } catch (error) {
             console.error("Error in handleSaveToggle:", error);
             Modal.error({
                 title: 'Error',
                 content: `Failed to update collection: ${error.message}`,
             });
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -167,6 +192,8 @@ const BodyMangaDetail = () => {
                                         onClick={handleSaveToggle}
                                         icon={isInCollection(id) ? <HeartFilled /> : <HeartOutlined />}
                                         className="collection-button"
+                                        loading={isSaving}
+                                        disabled={isSaving}
                                     >
                                         {auth.currentUser 
                                             ? (isInCollection(id) ? 'In Collection' : 'Add to Collection')
