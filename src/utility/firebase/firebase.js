@@ -48,7 +48,8 @@ export const registerWithEmailAndPassword = async (email, password, username) =>
       email,
       createdAt: serverTimestamp(),
       bookmarkedManga: [],
-      provider: 'email'
+      provider: 'email',
+      ads: false // Adding ads flag for alpha testers
     });
     
     return user;
@@ -91,10 +92,11 @@ export const signInWithGoogle = async () => {
       await setDoc(doc(db, "users", user.uid), {
         ...userData,
         createdAt: serverTimestamp(),
-        bookmarkedManga: []
+        bookmarkedManga: [],
+        ads: false // Adding ads flag for alpha testers
       });
     } else {
-      // Update existing user's data
+      // Update existing user's data but don't override the ads flag
       await updateDoc(doc(db, "users", user.uid), userData);
     }
     
