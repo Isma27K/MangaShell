@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import { Card, Typography, Tag, List, Skeleton, Row, Col, Space, Button, Modal } from 'antd';
+import { Card, Typography, Tag, List, Skeleton, Row, Col, Space, Button, Modal, message } from 'antd';
 import noMangaFound from '../../asset/fallback-image.png';
 import { useMangaCache } from '../../hooks/useMangaCache';
 import { HeartFilled, HeartOutlined } from '@ant-design/icons';
@@ -18,13 +18,13 @@ const BodyMangaDetail = () => {
     const [error, setError] = useState(null);
     const [expanded, setExpanded] = useState(false);
     const { 
-        isInCollection, 
-        saveManga, 
-        removeManga,
+        isInCollection,
         isChapterRead
     } = useMangaCache();
     const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
     const auth = getAuth();
+    const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         const fetchManga = async () => {
@@ -86,27 +86,25 @@ const BodyMangaDetail = () => {
 
     const handleSaveToggle = async () => {
         if (!auth.currentUser) {
-            setIsLoginModalVisible(true);
+            navigate('/login', { 
+                state: { 
+                    from: location
+                } 
+            });
+            message.info('Please login to save manga to your library');
             return;
         }
 
         try {
-            console.log('Starting save toggle operation');
-            console.log('Current user:', auth.currentUser);
-            console.log('Manga:', manga);
-            console.log('Manga ID:', id);
-
             if (isInCollection(id)) {
-                console.log('Removing manga from collection...');
                 await removeMangaFromCollection(auth.currentUser.uid, id);
-                removeManga(id);
+                message.success('Manga removed from collection');
             } else {
-                console.log('Adding manga to collection...');
                 await addMangaToCollection(auth.currentUser.uid, id);
-                saveManga(manga);
+                message.success('Manga added to collection');
             }
         } catch (error) {
-            console.error("Detailed error in handleSaveToggle:", error);
+            console.error("Error in handleSaveToggle:", error);
             Modal.error({
                 title: 'Error',
                 content: `Failed to update collection: ${error.message}`,
@@ -165,13 +163,13 @@ const BodyMangaDetail = () => {
                                         <Text strong>Last Updated:</Text> {manga.latest_update}
                                     </Text>
                                     <Button 
-                                        type={isInCollection(manga.id) ? 'primary' : 'default'}
+                                        type={isInCollection(id) ? 'primary' : 'default'}
                                         onClick={handleSaveToggle}
-                                        icon={isInCollection(manga.id) ? <HeartFilled /> : <HeartOutlined />}
+                                        icon={isInCollection(id) ? <HeartFilled /> : <HeartOutlined />}
                                         className="collection-button"
                                     >
                                         {auth.currentUser 
-                                            ? (isInCollection(manga.id) ? 'In Collection' : 'Add to Collection')
+                                            ? (isInCollection(id) ? 'In Collection' : 'Add to Collection')
                                             : 'Login to Save'
                                         }
                                     </Button>

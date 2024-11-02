@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Layout, Form, Input, Button, Divider, message } from 'antd';
 import { UserOutlined, LockOutlined, GoogleOutlined, FacebookOutlined } from '@ant-design/icons';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { signInWithEmail, signInWithGoogle } from '../../utility/firebase/firebase';
 import './login.style.scss';
 
@@ -11,13 +11,17 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Get the redirect path from location state, default to '/profile' if none exists
+  const from = location.state?.from?.pathname || '/';
 
   const onFinish = async (values) => {
     setLoading(true);
     try {
       await signInWithEmail(values.email, values.password);
       message.success('Login successful!');
-      navigate('/profile'); // Redirect to profile page after successful login
+      navigate(from, { replace: true }); // Navigate to the previous location
     } catch (error) {
       let errorMessage = 'Login failed. Please try again.';
       if (error.code === 'auth/user-not-found') {
@@ -39,7 +43,7 @@ const Login = () => {
       if (provider === 'Google') {
         await signInWithGoogle();
         message.success('Google sign-in successful!');
-        navigate('/profile');
+        navigate(from, { replace: true }); // Navigate to the previous location
       } else {
         message.info(`${provider} login will be implemented soon.`);
       }
