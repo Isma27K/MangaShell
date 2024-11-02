@@ -184,6 +184,76 @@ const ProfileBody = () => {
     }
   };
 
+  const renderBookmarkContent = () => {
+    if (loadingBookmarks) {
+      return isMobile ? (
+        <List
+          itemLayout="horizontal"
+          dataSource={[1, 2, 3, 4]}
+          renderItem={(_, index) => (
+            <List.Item key={index}>
+              <Skeleton 
+                avatar={{ shape: "square", className: "square-avatar" }} 
+                active 
+                paragraph={{ rows: 2 }} 
+              />
+            </List.Item>
+          )}
+        />
+      ) : (
+        <div className="card-container">
+          {[...Array(8)].map((_, index) => (
+            <div key={index} className="card-item">
+              <Skeleton active avatar paragraph={{ rows: 4 }} />
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (bookmarkDetails.length === 0) {
+      return (
+        <div className="no-bookmarks">
+          <Text>No bookmarked manga yet</Text>
+        </div>
+      );
+    }
+
+    if (isMobile) {
+      return (
+        <List
+          itemLayout="horizontal"
+          dataSource={bookmarkDetails}
+          renderItem={(manga) => (
+            <CustomCard
+              title={manga.title || 'Untitled'}
+              description={manga.description || 'No description available'}
+              cover_image={manga.cover_image}
+              id={manga._id}
+              isMobile={true}
+            />
+          )}
+        />
+      );
+    }
+
+    return (
+      <div className="card-container">
+        {bookmarkDetails.map((manga, index) => (
+          <div key={index} className="card-item">
+            <CustomCard
+              title={manga.title || 'Untitled'}
+              description={manga.description || 'No description available'}
+              cover_image={manga.cover_image}
+              id={manga._id}
+              isMobile={false}
+            />
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   if (loading) return <Skeleton active />;
   if (!userData) return <div>No user data available</div>;
 
@@ -208,35 +278,15 @@ const ProfileBody = () => {
               size="small"
             />
           </div>
-          <Text>{userData.email}</Text>
-          <Text>Joined: {userData.joinDate}</Text>
+          <div className="user-details">
+            <Text>{userData.email}</Text>
+            <Text>Joined: {userData.joinDate}</Text>
+          </div>
         </Col>
       </Row>
       <Tabs defaultActiveKey="1">
         <TabPane tab={<span><BookOutlined />Bookmarked Manga</span>} key="1">
-          {loadingBookmarks ? (
-            <Skeleton active />
-          ) : bookmarkDetails.length > 0 ? (
-            <List
-              grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 3, xl: 4, xxl: 4 }}
-              dataSource={bookmarkDetails}
-              renderItem={manga => (
-                <List.Item>
-                  <CustomCard
-                    title={manga.title || 'Untitled'}
-                    description={manga.description || 'No description available'}
-                    cover_image={manga.cover_image}
-                    id={manga._id}
-                    isMobile={isMobile}
-                  />
-                </List.Item>
-              )}
-            />
-          ) : (
-            <div className="no-bookmarks">
-              <Text>No bookmarked manga yet</Text>
-            </div>
-          )}
+          {renderBookmarkContent()}
         </TabPane>
       </Tabs>
 
