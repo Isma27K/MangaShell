@@ -5,7 +5,7 @@ import { auth, getUserData, updateUserProfile, storage } from '../../utility/fir
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import CustomCard from '../card/card.component';
 import './profile-body.style.scss';
-
+import { useNavigate } from 'react-router-dom';
 const { Content } = Layout;
 const { Title, Text } = Typography;
 const { TabPane } = Tabs;
@@ -19,6 +19,7 @@ const ProfileBody = () => {
   const [editUsername, setEditUsername] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [uploading, setUploading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleResize = () => {
@@ -63,6 +64,7 @@ const ProfileBody = () => {
         }
       } else {
         message.error("Please login to view profile");
+        navigate('/login');
       }
       setLoading(false);
     });

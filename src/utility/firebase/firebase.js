@@ -131,5 +131,15 @@ export const updateUserProfile = async (userId, updateData) => {
   }
 };
 
+// Function to sign out user
+export const signOutUser = async () => {
+  try {
+    await auth.signOut();
+  } catch (error) {
+    console.error("Error signing out: ", error);
+    throw error;
+  }
+};
+
 // Export auth instance for use in other parts of the app
 export { auth, db, storage };

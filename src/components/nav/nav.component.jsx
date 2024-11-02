@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AutoComplete, Button, Drawer, Image, Avatar } from 'antd';
-import { MenuOutlined, HomeOutlined, BookOutlined, UserOutlined, InfoCircleOutlined } from '@ant-design/icons';
-import { auth, getUserData } from '../../utility/firebase/firebase';
+import { AutoComplete, Button, Drawer, Image, Avatar, message } from 'antd';
+import { HomeOutlined, UserOutlined, LogoutOutlined, LoginOutlined, UserAddOutlined } from '@ant-design/icons';
+import { auth, getUserData, signOutUser } from '../../utility/firebase/firebase';
 import fallbackImage from '../../asset/fallback-image.png';
+import defaultAvatar from '../../asset/default-avatar.png';
 import './nav.style.scss';
 
 // Add this function to truncate text
@@ -115,6 +116,75 @@ const Nav = () => {
         window.location.reload();
     };
 
+    const handleLogout = async () => {
+        try {
+            await signOutUser();
+            message.success('Logged out successfully');
+            navigate('/');
+            onClose();
+        } catch (error) {
+            console.error("Error logging out:", error);
+            message.error('Failed to logout');
+        }
+    };
+
+    const renderMenuItems = () => {
+        if (userData) {
+            return (
+                <>
+                    <div className="menu-items-top">
+                        <li className="menu-item">
+                            <Link to="/profile" onClick={onClose}>
+                                <UserOutlined /> Profile
+                            </Link>
+                        </li>
+                        <li className="menu-item">
+                            <Link to="/" onClick={onClose}>
+                                <HomeOutlined /> Home
+                            </Link>
+                        </li>
+                    </div>
+                    <div className="menu-items-bottom">
+                        <li className="menu-item">
+                            <Button 
+                                type="text" 
+                                onClick={handleLogout} 
+                                icon={<LogoutOutlined />}
+                                className="logout-button"
+                            >
+                                Logout
+                            </Button>
+                        </li>
+                    </div>
+                </>
+            );
+        } else {
+            return (
+                <>
+                    <div className="menu-items-top">
+                        <li className="menu-item">
+                            <Link to="/" onClick={onClose}>
+                                <HomeOutlined /> Home
+                            </Link>
+                        </li>
+                    </div>
+                    <div className="menu-items-bottom">
+                        <li className="menu-item">
+                            <Link to="/login" onClick={onClose}>
+                                <LoginOutlined /> Login
+                            </Link>
+                        </li>
+                        <li className="menu-item">
+                            <Link to="/register" onClick={onClose}>
+                                <UserAddOutlined /> Register
+                            </Link>
+                        </li>
+                    </div>
+                </>
+            );
+        }
+    };
+
     return (
         <nav className="nav">
             <div className="nav-content">
@@ -134,8 +204,8 @@ const Nav = () => {
                     />
                     <Avatar 
                         size={32}
-                        src={imageUrl}
-                        icon={!imageUrl && <UserOutlined />}
+                        src={imageUrl || defaultAvatar}
+                        icon={!imageUrl && !defaultAvatar && <UserOutlined />}
                         onClick={showDrawer}
                         style={{ cursor: 'pointer' }}
                         className="nav-avatar"
@@ -150,26 +220,7 @@ const Nav = () => {
                 className="mobile-menu"
             >
                 <ul className="menu-list">
-                    <li className="menu-item">
-                        <Link to="/" onClick={onClose}>
-                            <HomeOutlined /> Home
-                        </Link>
-                    </li>
-                    <li className="menu-item">
-                        <Link to="/browse" onClick={onClose}>
-                            <BookOutlined /> Browse Manga
-                        </Link>
-                    </li>
-                    <li className="menu-item">
-                        <Link to="/profile" onClick={onClose}>
-                            <UserOutlined /> Profile
-                        </Link>
-                    </li>
-                    <li className="menu-item">
-                        <Link to="/about" onClick={onClose}>
-                            <InfoCircleOutlined /> About
-                        </Link>
-                    </li>
+                    {renderMenuItems()}
                 </ul>
             </Drawer>
         </nav>
