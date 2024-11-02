@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Layout, Form, Input, Button, Divider, message } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined, GoogleOutlined, FacebookOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
+import { registerWithEmailAndPassword, signInWithGoogle } from '../../utility/firebase/firebase';
 import './register.style.scss';
 
 const { Content } = Layout;
@@ -14,23 +15,35 @@ const Register = () => {
   const onFinish = async (values) => {
     setLoading(true);
     try {
-      // Here you would typically make an API call to register the user
-      console.log('Registration attempt with:', values);
-      // Simulating an API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await registerWithEmailAndPassword(values.email, values.password, values.username);
       message.success('Registration successful!');
-      navigate('/login'); // Redirect to login page after successful registration
+      navigate('/login');
     } catch (error) {
-      message.error('Registration failed. Please try again.');
+      let errorMessage = 'Registration failed. Please try again.';
+      if (error.code === 'auth/email-already-in-use') {
+        errorMessage = 'This email is already registered. Please use a different email.';
+      }
+      message.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSocialRegister = (provider) => {
-    // This function will be implemented later with Firebase
-    console.log(`${provider} registration clicked`);
-    message.info(`${provider} registration will be implemented soon.`);
+  const handleSocialRegister = async (provider) => {
+    setLoading(true);
+    try {
+      if (provider === 'Google') {
+        await signInWithGoogle();
+        message.success('Google sign-in successful!');
+        navigate('/profile');
+      } else {
+        message.info(`${provider} registration will be implemented soon.`);
+      }
+    } catch (error) {
+      message.error('Social sign-in failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Email validation regex

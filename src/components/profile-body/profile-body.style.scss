@@ -5,19 +5,33 @@
   .profile-header {
     margin-bottom: 24px;
 
-    .ant-avatar {
-      background-color: #1f1f1f;
+    .avatar-container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+
+      .upload-button {
+        width: 80px;
+      }
     }
 
     .profile-info {
-      h2, h3 {
-        margin-bottom: 0;
-        color: #1f1f1f;
+      .profile-header-content {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 8px;
+
+        h2, h3 {
+          margin: 0;
+        }
       }
 
       .ant-typography {
         display: block;
-        color: #666666;
+        margin-bottom: 4px;
       }
     }
   }
@@ -43,6 +57,22 @@
     .ant-list-item {
       border: none;
     }
+  }
+
+  .edit-profile-form {
+    .form-item {
+      margin-bottom: 16px;
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+      }
+    }
+  }
+
+  .no-bookmarks {
+    text-align: center;
+    padding: 24px;
   }
 }
 

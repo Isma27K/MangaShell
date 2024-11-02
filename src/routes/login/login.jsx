@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Layout, Form, Input, Button, Divider, message } from 'antd';
 import { UserOutlined, LockOutlined, GoogleOutlined, FacebookOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
+import { signInWithEmail, signInWithGoogle } from '../../utility/firebase/firebase';
 import './login.style.scss';
 
 const { Content } = Layout;
@@ -14,23 +15,39 @@ const Login = () => {
   const onFinish = async (values) => {
     setLoading(true);
     try {
-      // Here you would typically make an API call to authenticate the user
-      console.log('Login attempt with:', values);
-      // Simulating an API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await signInWithEmail(values.email, values.password);
       message.success('Login successful!');
-      navigate('/'); // Redirect to home page after successful login
+      navigate('/profile'); // Redirect to profile page after successful login
     } catch (error) {
-      message.error('Login failed. Please try again.');
+      let errorMessage = 'Login failed. Please try again.';
+      if (error.code === 'auth/user-not-found') {
+        errorMessage = 'No account found with this email.';
+      } else if (error.code === 'auth/wrong-password') {
+        errorMessage = 'Incorrect password.';
+      } else if (error.code === 'auth/invalid-email') {
+        errorMessage = 'Invalid email format.';
+      }
+      message.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSocialLogin = (provider) => {
-    // This function will be implemented later with Firebase
-    console.log(`${provider} login clicked`);
-    message.info(`${provider} login will be implemented soon.`);
+  const handleSocialLogin = async (provider) => {
+    setLoading(true);
+    try {
+      if (provider === 'Google') {
+        await signInWithGoogle();
+        message.success('Google sign-in successful!');
+        navigate('/profile');
+      } else {
+        message.info(`${provider} login will be implemented soon.`);
+      }
+    } catch (error) {
+      message.error('Social login failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Email validation regex
@@ -53,10 +70,7 @@ const Login = () => {
               name="email"
               rules={[
                 { required: true, message: 'Please input your Email!' },
-                { 
-                  pattern: emailRegex, 
-                  message: 'Please enter a valid email address!' 
-                }
+                { type: 'email', message: 'Please enter a valid email address!' }
               ]}
             >
               <Input prefix={<UserOutlined />} placeholder="Email" />
@@ -74,12 +88,6 @@ const Login = () => {
                 htmlType="submit" 
                 className="login-form-button" 
                 loading={loading}
-                onClick={() => {
-                  form.validateFields().then(
-                    () => {},
-                    () => {}
-                  );
-                }}
               >
                 Log in
               </Button>
