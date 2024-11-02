@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from 'react';
+
+import AdminBadge from '../badges/admin/admin.badges';
+import AlphaBadge from '../badges/alpha/alpha.badge';
+import ProgrammerBadge from '../badges/programmer/programmer.badge';
 import { Layout, Typography, Avatar, Tabs, List, Skeleton, Row, Col, message, Button, Modal, Input, Upload } from 'antd';
 import { UserOutlined, BookOutlined, EditOutlined, UploadOutlined } from '@ant-design/icons';
 import { auth, getUserData, updateUserProfile, storage } from '../../utility/firebase/firebase';
@@ -9,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 const { Content } = Layout;
 const { Title, Text } = Typography;
 const { TabPane } = Tabs;
+
 
 const ProfileBody = () => {
   const [userData, setUserData] = useState(null);
@@ -281,6 +286,9 @@ const ProfileBody = () => {
           <div className="user-details">
             <Text>{userData.email}</Text>
             <Text>Joined: {userData.joinDate}</Text>
+            <AdminBadge />
+            <AlphaBadge />
+            <ProgrammerBadge />
           </div>
         </Col>
       </Row>

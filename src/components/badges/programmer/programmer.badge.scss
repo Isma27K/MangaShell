@@ -1,0 +1,186 @@
+.programmer-badge {
+  display: inline-block;
+  position: relative;
+  
+  &.small {
+    transform: scale(0.8);
+  }
+  
+  &.large {
+    transform: scale(1.2);
+  }
+
+  .badge-container {
+    position: relative;
+    padding: 3px 8px;
+    background: linear-gradient(45deg, #440000, #990000);
+    border-radius: 3px;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+    overflow: hidden;
+    display: inline-block;
+    white-space: nowrap;
+    border: 1px solid rgba(255, 0, 0, 0.5);
+    animation: pulse-border 2s infinite;
+  }
+
+  .badge-inner {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .badge-text {
+    color: #ff3333;
+    font-weight: bold;
+    font-size: 11px;
+    text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+    letter-spacing: 0.5px;
+    position: relative;
+    animation: text-flicker 3s infinite;
+
+    &::before {
+      content: attr(data-text);
+      position: absolute;
+      left: -2px;
+      text-shadow: 2px 0 #ff0000;
+      top: 0;
+      color: #ff3333;
+      background: #440000;
+      overflow: hidden;
+      clip: rect(0, 900px, 0, 0);
+      animation: glitch-effect 3s infinite linear alternate-reverse;
+    }
+  }
+
+  .matrix-effect {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(transparent, rgba(255, 0, 0, 0.2));
+    background-size: 4px 4px;
+    z-index: 1;
+    opacity: 0.5;
+    animation: matrix 20s linear infinite;
+  }
+
+  .energy-ring {
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    border-radius: 50%;
+    animation: energy-spin 4s linear infinite;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border: 1px solid rgba(255, 0, 0, 0.5);
+      border-radius: 50%;
+      animation: energy-spin 3s linear infinite reverse;
+    }
+  }
+
+  .sparks {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .spark {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    background: #ff0000;
+    border-radius: 50%;
+    animation: spark-fly 2s infinite;
+    
+    @for $i from 1 through 5 {
+      &-#{$i} {
+        animation-delay: $i * 0.2s;
+        left: percentage(random(100) / 100);
+        top: percentage(random(100) / 100);
+      }
+    }
+  }
+
+  &:hover {
+    .matrix-effect {
+      opacity: 0.8;
+      animation: matrix 10s linear infinite;
+    }
+    
+    .energy-ring {
+      animation: energy-spin 2s linear infinite;
+      &::before {
+        animation: energy-spin 1.5s linear infinite reverse;
+      }
+    }
+    
+    .badge-text {
+      color: #ff6666;
+      animation: text-flicker 1.5s infinite;
+    }
+
+    .spark {
+      animation: spark-fly 1s infinite;
+    }
+  }
+}
+
+@keyframes pulse-border {
+  0% { border-color: rgba(255, 0, 0, 0.5); }
+  50% { border-color: rgba(255, 0, 0, 0.8); }
+  100% { border-color: rgba(255, 0, 0, 0.5); }
+}
+
+@keyframes matrix {
+  0% {
+    transform: translateY(0%) rotate(0deg);
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateY(100%) rotate(360deg);
+    opacity: 0.6;
+  }
+}
+
+@keyframes energy-spin {
+  0% { transform: rotate(0deg) scale(0.8); }
+  50% { transform: rotate(180deg) scale(1); }
+  100% { transform: rotate(360deg) scale(0.8); }
+}
+
+@keyframes text-flicker {
+  0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+    opacity: 1;
+    text-shadow: 0 0 4px #ff0000, 0 0 11px #ff0000, 0 0 19px #ff0000;
+  }
+  20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+    opacity: 0.4;
+    text-shadow: none;
+  }
+}
+
+@keyframes spark-fly {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(
+      calc(random(50) * 1px - 25px),
+      calc(random(50) * 1px - 25px)
+    ) scale(0);
+    opacity: 0;
+  }
+}
+
+@keyframes glitch-effect {
+  0% { clip: rect(4px, 900px, 6px, 0); }
+  20% { clip: rect(2px, 900px, 5px, 0); }
+  40% { clip: rect(8px, 900px, 12px, 0); }
+  60% { clip: rect(3px, 900px, 5px, 0); }
+  80% { clip: rect(7px, 900px, 9px, 0); }
+  100% { clip: rect(4px, 900px, 11px, 0); }
+}
