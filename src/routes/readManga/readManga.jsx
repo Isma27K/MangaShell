@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Spin, Button, message, Breadcrumb, Select, FloatButton } from 'antd';
 import { LeftOutlined, RightOutlined, HomeOutlined, VerticalAlignTopOutlined } from '@ant-design/icons';
 import './readManga.style.scss';
+import { useMangaCache } from '../../hooks/useMangaCache';
 
 const ReadManga = () => {
     const { id, chapter } = useParams();
@@ -11,6 +12,7 @@ const ReadManga = () => {
     const [initialLoading, setInitialLoading] = useState(true);
     const [mangaInfo, setMangaInfo] = useState(null);
     const [currentChapter, setCurrentChapter] = useState(null);
+    const { markChapterRead } = useMangaCache();
     const [priorityLoad, setPriorityLoad] = useState(() => {
         const savedPriority = localStorage.getItem('mangaPriorityLoad');
         return savedPriority ? parseInt(savedPriority) : 5;
@@ -26,6 +28,7 @@ const ReadManga = () => {
             setCurrentChapter(foundChapter);
             if (foundChapter) {
                 fetchChapterImages(foundChapter._id);
+                markChapterRead(id, chapter);
             }
         }
     }, [mangaInfo, chapter]);

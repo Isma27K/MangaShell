@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Card, Typography, Tag, List, Skeleton, Row, Col, Space, Button } from 'antd';
-import './bodyMangaDetail.styles.scss';
 import noMangaFound from '../../asset/fallback-image.png';
+import { useMangaCache } from '../../hooks/useMangaCache';
+import { HeartFilled, HeartOutlined } from '@ant-design/icons';
+import './bodyMangaDetail.styles.scss';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -13,6 +15,12 @@ const BodyMangaDetail = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [expanded, setExpanded] = useState(false);
+    const { 
+        isInCollection, 
+        saveManga, 
+        removeManga,
+        isChapterRead
+    } = useMangaCache();
 
     useEffect(() => {
         const fetchManga = async () => {
@@ -30,22 +38,21 @@ const BodyMangaDetail = () => {
     }, [id]);
 
     if (loading) return <Skeleton active />;
-    //if (error) return <div className="error">{error}</div>;
 
-    if (error){
+    if (error) {
         return (
-            <div className="not-found" style={{ textAlign: 'center' }}> 
-                <span className="not-found-text" style={{ fontSize: '2rem', marginBottom: '2rem' }}>No manga found</span><br />
-                <img src={noMangaFound} alt="No manga found" style={{ width: '40vh' }}/>
+            <div className="error-container">
+                <span className="error-text">No manga found</span>
+                <img src={noMangaFound} alt="No manga found" className="error-image" />
             </div>
         );
     }
 
-    if (!manga) { // if the are no mangga
+    if (!manga) {
         return (
-            <div className="not-found" style={{ textAlign: 'center', marginTop: '35vh' }}>
-                <img src={noMangaFound} alt="No manga found" />
-                No manga found
+            <div className="error-container">
+                <img src={noMangaFound} alt="No manga found" className="error-image" />
+                <span className="error-text">No manga found</span>
             </div>
         );
     }
@@ -59,6 +66,33 @@ const BodyMangaDetail = () => {
         setExpanded(!expanded);
     };
 
+    const handleSaveToggle = () => {
+        if (isInCollection(manga.id)) {
+            removeManga(manga.id);
+        } else {
+            saveManga(manga);
+        }
+    };
+
+    const ChapterListItem = ({ chapter }) => {
+        const isRead = isChapterRead(id, chapter._id);
+        
+        return (
+            <List.Item className="chapter-item">
+                <Link 
+                    to={`/manga/${id}/${chapter._id}`}
+                    className={`chapter-link ${isRead ? 'read' : ''}`}
+                >
+                    <div className="chapter-content">
+                        {isRead && <div className="read-indicator" />}
+                        <span className="chapter-title">{chapter.title}</span>
+                    </div>
+                    <span className="chapter-date">{chapter.release_date}</span>
+                </Link>
+            </List.Item>
+        );
+    };
+
     return (
         <div className="manga-detail">
             <Row gutter={[16, 16]}>
@@ -70,11 +104,30 @@ const BodyMangaDetail = () => {
                             </div>
                             <div className="manga-info">
                                 <Title level={2}>{manga.title}</Title>
-                                <Space direction="vertical" size="small">
-                                    <Text><Text strong>Alternative Names:</Text> {manga.alt_names.join(', ')}</Text>
-                                    <Text><Text strong>Author(s):</Text> {manga.authors.join(', ')}</Text>
-                                    <Text><Text strong>Status:</Text> <Tag color={manga.status.toLowerCase() === 'ongoing' ? 'green' : 'blue'}>{manga.status}</Tag></Text>
-                                    <Text><Text strong>Last Updated:</Text> {manga.latest_update}</Text>
+                                <Space direction="vertical" size="small" className="info-items">
+                                    <Text>
+                                        <Text strong>Alternative Names:</Text> {manga.alt_names.join(', ')}
+                                    </Text>
+                                    <Text>
+                                        <Text strong>Author(s):</Text> {manga.authors.join(', ')}
+                                    </Text>
+                                    <Text>
+                                        <Text strong>Status:</Text> 
+                                        <Tag color={manga.status.toLowerCase() === 'ongoing' ? 'green' : 'blue'}>
+                                            {manga.status}
+                                        </Tag>
+                                    </Text>
+                                    <Text>
+                                        <Text strong>Last Updated:</Text> {manga.latest_update}
+                                    </Text>
+                                    <Button 
+                                        type={isInCollection(manga.id) ? 'primary' : 'default'}
+                                        onClick={handleSaveToggle}
+                                        icon={isInCollection(manga.id) ? <HeartFilled /> : <HeartOutlined />}
+                                        className="collection-button"
+                                    >
+                                        {isInCollection(manga.id) ? 'In Collection' : 'Add to Collection'}
+                                    </Button>
                                 </Space>
                                 <div className="manga-genres">
                                     {manga.genres.map((genre, index) => (
@@ -99,12 +152,7 @@ const BodyMangaDetail = () => {
                         <List
                             dataSource={manga.chapters}
                             renderItem={(chapter) => (
-                                <List.Item>
-                                    <Link to={`/manga/${id}/${chapter._id}`} rel="noopener noreferrer">
-                                        <Text strong>{chapter.title}</Text>
-                                        <Text type="secondary">{chapter.release_date}</Text>
-                                    </Link>
-                                </List.Item>
+                                <ChapterListItem chapter={chapter} />
                             )}
                         />
                     </Card>

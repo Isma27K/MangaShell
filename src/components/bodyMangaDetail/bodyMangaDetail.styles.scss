@@ -107,15 +107,75 @@
                 background-color: $hover-color;
             }
 
-            a {
+            .chapter-link {
                 display: flex;
                 justify-content: space-between;
                 width: 100%;
                 color: $text-color;
                 text-decoration: none;
 
+                &.read {
+                    color: #8c8c8c !important;  // Faded text color for read chapters
+                }
+
                 &:hover {
                     color: $primary-color;
+                }
+            }
+        }
+
+        .chapters-list {
+            .chapter-list-item {
+                transition: all 0.3s ease;
+                border-radius: 4px;
+                margin: 4px 0;
+
+                &.read {
+                    background-color: rgba(82, 196, 26, 0.1);
+                }
+
+                &:hover {
+                    background-color: rgba(0, 0, 0, 0.03);
+                }
+
+                .chapter-link {
+                    width: 100%;
+                    padding: 8px 12px;
+                    text-decoration: none;
+
+                    .chapter-item {
+                        width: 100%;
+
+                        .chapter-info {
+                            display: flex;
+                            flex-direction: column;
+                            gap: 4px;
+                            width: 100%;
+
+                            .read-title {
+                                color: #8c8c8c;
+                            }
+
+                            .chapter-metadata {
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+
+                                .read-date {
+                                    color: #bfbfbf;
+                                }
+
+                                .read-badge {
+                                    font-size: 12px;
+                                    padding: 0 6px;
+                                    border-radius: 10px;
+                                    background-color: rgba(82, 196, 26, 0.2);
+                                    color: #52c41a;
+                                    border: 1px solid rgba(82, 196, 26, 0.4);
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
