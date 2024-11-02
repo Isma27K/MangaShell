@@ -19,7 +19,34 @@ const ReadManga = () => {
     });
 
     useEffect(() => {
-        fetchMangaInfo();
+        let isSubscribed = true;
+        
+        const fetchData = async () => {
+            setInitialLoading(true);
+            try {
+                const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/data/${id}`);
+                if (!response.ok) throw new Error('Failed to fetch manga info');
+                const data = await response.json();
+                if (isSubscribed) {
+                    setMangaInfo(data);
+                }
+            } catch (error) {
+                console.error('Error fetching manga info:', error);
+                if (isSubscribed) {
+                    message.error('Failed to load manga information');
+                }
+            } finally {
+                if (isSubscribed) {
+                    setInitialLoading(false);
+                }
+            }
+        };
+
+        fetchData();
+
+        return () => {
+            isSubscribed = false;
+        };
     }, [id]);
 
     useEffect(() => {
@@ -33,21 +60,6 @@ const ReadManga = () => {
         }
     }, [mangaInfo, chapter]);
 
-    const fetchMangaInfo = async () => {
-        setInitialLoading(true);
-        try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/data/${id}`);
-            if (!response.ok) throw new Error('Failed to fetch manga info');
-            const data = await response.json();
-            setMangaInfo(data);
-        } catch (error) {
-            console.error('Error fetching manga info:', error);
-            message.error('Failed to load manga information');
-        } finally {
-            setInitialLoading(false);
-        }
-    };
-
     const fetchChapterImages = async (chapterId) => {
         setImages([]);
 
@@ -56,6 +68,7 @@ const ReadManga = () => {
         );
 
         let pendingImages = [];
+        let processedUrls = new Set();
 
         eventSource.onmessage = (event) => {
             const data = JSON.parse(event.data);
@@ -73,6 +86,11 @@ const ReadManga = () => {
 
             const imageUrl = `${process.env.REACT_APP_BACKEND_URL}/data/proxy-image?url=${encodeURIComponent(data.url)}`;
             
+            if (processedUrls.has(imageUrl)) {
+                return;
+            }
+            processedUrls.add(imageUrl);
+
             if (data.index < priorityLoad) {
                 setImages(prevImages => {
                     const newImages = [...prevImages];
