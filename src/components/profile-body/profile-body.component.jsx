@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import AdminBadge from '../badges/admin/admin.badges';
 import AlphaBadge from '../badges/alpha/alpha.badge';
 import ProgrammerBadge from '../badges/programmer/programmer.badge';
+import ChatterBadge from '../badges/chatter/chatter.badge';
 import { Layout, Typography, Avatar, Tabs, List, Skeleton, Row, Col, message, Button, Modal, Input, Upload } from 'antd';
 import { UserOutlined, BookOutlined, EditOutlined, UploadOutlined } from '@ant-design/icons';
 import { auth, getUserData, updateUserProfile, storage } from '../../utility/firebase/firebase';
@@ -26,6 +27,7 @@ const ProfileBody = () => {
   const [uploading, setUploading] = useState(false);
   const [bookmarkDetails, setBookmarkDetails] = useState([]);
   const [loadingBookmarks, setLoadingBookmarks] = useState(false);
+  const [userBadges, setUserBadges] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -60,6 +62,7 @@ const ProfileBody = () => {
               bookmarkedManga: data.bookmarkedManga || [],
               photoURL: photoURL
             });
+            setUserBadges(data.badges || []);
             setImageUrl(photoURL);
             setEditUsername(data.username);
             
@@ -259,6 +262,17 @@ const ProfileBody = () => {
     );
   };
 
+  const renderBadges = () => {
+    return (
+      <>
+        {userBadges.includes(0) && <ProgrammerBadge />}
+        {userBadges.includes(1) && <AdminBadge />}
+        {userBadges.includes(2) && <AlphaBadge />}
+        {userBadges.includes(3) && <ChatterBadge />}
+      </>
+    );
+  };
+
   if (loading) return <Skeleton active />;
   if (!userData) return <div>No user data available</div>;
 
@@ -286,9 +300,9 @@ const ProfileBody = () => {
           <div className="user-details">
             <Text>{userData.email}</Text>
             <Text>Joined: {userData.joinDate}</Text>
-            <AdminBadge />
-            <AlphaBadge />
-            <ProgrammerBadge />
+            <div className="badge-container">
+              {renderBadges()}
+            </div>
           </div>
         </Col>
       </Row>
