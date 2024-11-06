@@ -142,7 +142,7 @@ const Dashboard = ({ page }) => {
               description={card.description}
               cover_image={card.cover_image}
               genres={card.genres}
-              id={card._id}
+              id={card.manga_id}
               isMobile={true}
             />
           )}
@@ -159,7 +159,7 @@ const Dashboard = ({ page }) => {
               description={card.description}
               cover_image={card.cover_image}
               genres={card.genres}
-              id={card._id}
+              id={card.manga_id}
               isMobile={false}
             />
           </div>
