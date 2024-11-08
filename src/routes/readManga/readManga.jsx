@@ -4,6 +4,7 @@ import { Spin, Button, message, Breadcrumb, Select, FloatButton } from 'antd';
 import { LeftOutlined, RightOutlined, HomeOutlined, VerticalAlignTopOutlined } from '@ant-design/icons';
 import './readManga.style.scss';
 import { useMangaCache } from '../../hooks/useMangaCache';
+import Ad from '../../components/Ad/Ad';
 
 const ReadManga = () => {
     const { id, chapter } = useParams();
@@ -141,6 +142,31 @@ const ReadManga = () => {
     const isFirstChapter = currentChapter && mangaInfo?.chapters[0]._id === currentChapter._id;
     const isLastChapter = currentChapter && mangaInfo?.chapters[mangaInfo.chapters.length - 1]._id === currentChapter._id;
 
+    const renderImagesWithAds = () => {
+        const result = [];
+        
+        // Add images with ad between second and third image
+        images.forEach((imageUrl, index) => {
+            if (imageUrl) {
+                result.push(
+                    <img 
+                        key={`img-${index}`}
+                        src={imageUrl}
+                        alt={`Page ${index + 1}`}
+                        className="manga-page"
+                    />
+                );
+                
+                // Insert ad after second image (index 1)
+                if (index === 1) {
+                    result.push(<Ad key="mid-ad" />);
+                }
+            }
+        });
+
+        return result;
+    };
+
     if (initialLoading) {
         return (
             <div className="read-manga-container">
@@ -200,16 +226,7 @@ const ReadManga = () => {
             </div>
 
             <div className="manga-images">
-                {images.map((imageUrl, index) => (
-                    imageUrl && (
-                        <img 
-                            key={index}
-                            src={imageUrl}
-                            alt={`Page ${index + 1}`}
-                            className="manga-page"
-                        />
-                    )
-                ))}
+                {renderImagesWithAds()}
             </div>
 
             <div className="chapter-navigation-bottom">
