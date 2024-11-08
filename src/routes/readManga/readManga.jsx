@@ -145,7 +145,6 @@ const ReadManga = () => {
     const renderImagesWithAds = () => {
         const result = [];
         
-        // Add images with ad between second and third image
         images.forEach((imageUrl, index) => {
             if (imageUrl) {
                 result.push(
